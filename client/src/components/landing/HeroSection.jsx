@@ -1,24 +1,38 @@
+import {
+  APP_NAME,
+  APP_DESCRIPTION,
+} from "../../constants/appConstants";
 function HeroSection() {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6">
-      <h1 className="text-5xl font-bold text-center">
-        Your AI-Powered Personal Operating System
-      </h1>
+    <section className="min-h-screen flex flex-col justify-center items-center px-6 text-center">
 
-      <p className="mt-6 text-lg text-center max-w-2xl text-gray-600">
-        Plan your life, manage tasks, organize notes, track habits, and let AI
-        help you stay productive—all in one place.
+      <p className="px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium">
+        🚀 AI-Powered Productivity Platform
       </p>
 
-      <div className="mt-8 flex gap-4">
-        <button className="bg-black text-white px-6 py-3 rounded-lg">
+      <h1 className="mt-8 text-6xl md:text-7xl font-extrabold leading-tight">
+        Your{" "}
+        <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          AI-Powered
+        </span>
+        <br />
+        Personal Operating System
+      </h1>
+
+      <p className="mt-8 max-w-3xl text-lg text-gray-600 dark:text-gray-300">
+  {APP_DESCRIPTION}
+    </p>
+
+      <div className="mt-10 flex gap-6">
+        <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:scale-105 transition">
           Get Started
         </button>
 
-        <button className="border px-6 py-3 rounded-lg">
+        <button className="px-8 py-4 rounded-xl border dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-800 transition">
           Learn More
         </button>
       </div>
+
     </section>
   );
 }
