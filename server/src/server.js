@@ -1,9 +1,26 @@
-require("dotenv").config();
+import dns from "node:dns";
 
-const app = require("./app");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
-const PORT = process.env.PORT || 5000;
+import dotenv from "dotenv";
+dotenv.config();
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+import app from "./app.js";
+import connectDB from "./config/db.js";
+import { PORT } from "./config/env.js";
+
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server");
+    console.error(error);
+  }
+};
+
+startServer();
