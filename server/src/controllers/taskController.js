@@ -1,6 +1,7 @@
 import {
   createTaskService,
   getTasksService,
+  getTaskService,
   updateTaskService,
   deleteTaskService,
 } from "../services/taskService.js";
@@ -39,13 +40,33 @@ export const getTasks = async (req, res) => {
     });
   }
 };
+
+export const getTask = async (req, res) => {
+  try {
+    const task = await getTaskService(
+      req.params.id,
+      req.user.id
+    );
+
+    res.status(200).json({
+      success: true,
+      data: task,
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const updateTask = async (req, res) => {
   try {
-   const task = await updateTaskService(
-  req.params.id,
-  req.user.id,
-  req.body
-);
+    const task = await updateTaskService(
+      req.params.id,
+      req.user.id,
+      req.body
+    );
 
     res.status(200).json({
       success: true,
@@ -58,9 +79,13 @@ export const updateTask = async (req, res) => {
     });
   }
 };
+
 export const deleteTask = async (req, res) => {
   try {
-    await deleteTaskService(req.params.id);
+    await deleteTaskService(
+      req.params.id,
+      req.user.id
+    );
 
     res.status(200).json({
       success: true,
