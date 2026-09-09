@@ -23,6 +23,7 @@ import intelligenceRoutes from "./routes/intelligenceRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
 import studyWorkspaceRoutes from "./routes/studyWorkspaceRoutes.js";
+import scheduleRoutes from "./routes/scheduleRoutes.js";
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.use("/api/intelligence", intelligenceRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/study-workspace", studyWorkspaceRoutes);
+app.use("/api/schedules", scheduleRoutes);
 
 
 // Test Route

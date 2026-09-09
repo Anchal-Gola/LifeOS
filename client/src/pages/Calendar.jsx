@@ -1,11 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
+
 import MainLayout from "../layouts/MainLayout";
+
 import {
   createEvent,
   getEvents,
   updateEvent,
   deleteEvent,
 } from "../api/eventApi";
+
+import {
+  getSchedules,
+  updateSchedule,
+  deleteSchedule,
+} from "../api/scheduleApi";
+
+import { createSchedule } from "../api/scheduleApi";
 
 function Calendar() {
   const [events, setEvents] = useState([]);
@@ -16,7 +26,6 @@ function Calendar() {
   const [endTime, setEndTime] = useState("");
   const [location, setLocation] = useState("");
   const [reminderMinutes, setReminderMinutes] = useState(10);
-  const [status, setStatus] = useState("upcoming");
 
   const [editingEvent, setEditingEvent] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -41,17 +50,18 @@ function Calendar() {
     setEndTime("");
     setLocation("");
     setReminderMinutes(10);
-    setStatus("upcoming");
     setEditingEvent(null);
   };
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
 
-    if (!title.trim() || !startTime) return;
+    if (!title.trim() || !startTime) {
+      return;
+    }
 
     try {
-      await createEvent({
+      const eventResponse = await createEvent({
         title,
         description,
         startTime,
@@ -60,10 +70,35 @@ function Calendar() {
         reminderMinutes: Number(reminderMinutes),
       });
 
+      const newEvent = eventResponse?.data;
+
+      if (!newEvent?._id) {
+        throw new Error(
+          "Event was created but its ID was not returned."
+        );
+      }
+
+      await createSchedule({
+        sourceType: "calendar",
+        sourceId: newEvent._id,
+        title: newEvent.title,
+        scheduledFor: newEvent.startTime,
+        reminderMinutes: Number(reminderMinutes),
+        repeat: "none",
+        notificationEnabled:
+          Number(reminderMinutes) > 0,
+        soundEnabled: true,
+        alarmEnabled: true,
+        status: "scheduled",
+      });
+
       resetForm();
       fetchEvents();
     } catch (error) {
-      console.error("Create event error:", error);
+      console.error(
+        "Create event/schedule error:",
+        error
+      );
     }
   };
 
@@ -73,79 +108,141 @@ function Calendar() {
     setTitle(event.title);
     setDescription(event.description || "");
     setLocation(event.location || "");
-    setReminderMinutes(event.reminderMinutes ?? 10);
-    setStatus(event.status || "upcoming");
+    setReminderMinutes(
+      event.reminderMinutes ?? 10
+    );
 
     setStartTime(
       event.startTime
-        ? new Date(event.startTime).toISOString().slice(0, 16)
+        ? new Date(event.startTime)
+            .toISOString()
+            .slice(0, 16)
         : ""
     );
 
     setEndTime(
       event.endTime
-        ? new Date(event.endTime).toISOString().slice(0, 16)
+        ? new Date(event.endTime)
+            .toISOString()
+            .slice(0, 16)
         : ""
     );
   };
 
-  const handleUpdateEvent = async (e) => {
-    e.preventDefault();
+ const handleUpdateEvent = async (e) => {
+  e.preventDefault();
 
-    if (!title.trim() || !startTime) return;
+  if (!editingEvent || !title.trim() || !startTime) {
+    return;
+  }
 
-    try {
-      await updateEvent(editingEvent._id, {
+  try {
+    await updateEvent(editingEvent._id, {
+      title,
+      description,
+      startTime,
+      endTime: endTime || undefined,
+      location,
+      reminderMinutes: Number(reminderMinutes),
+    });
+
+    const schedulesResponse = await getSchedules();
+    const schedules = schedulesResponse?.data || [];
+
+    const schedule = schedules.find(
+      (item) =>
+        item.sourceType === "calendar" &&
+        item.sourceId === editingEvent._id
+    );
+
+    if (schedule?._id) {
+      await updateSchedule(schedule._id, {
         title,
-        description,
-        startTime,
-        endTime: endTime || undefined,
-        location,
+        scheduledFor: startTime,
         reminderMinutes: Number(reminderMinutes),
-        status,
+        notificationEnabled: Number(reminderMinutes) > 0,
+        soundEnabled: true,
+        alarmEnabled: true,
+        status: "scheduled",
       });
-
-      resetForm();
-      fetchEvents();
-    } catch (error) {
-      console.error("Update event error:", error);
     }
-  };
 
-  const handleCompleteEvent = async (id) => {
-    try {
-      await updateEvent(id, {
+    resetForm();
+    fetchEvents();
+  } catch (error) {
+    console.error("Update event/schedule error:", error);
+  }
+};
+
+ const handleCompleteEvent = async (id) => {
+  try {
+    await updateEvent(id, {
+      status: "completed",
+    });
+
+    const schedulesResponse = await getSchedules();
+    const schedules = schedulesResponse?.data || [];
+
+    const schedule = schedules.find(
+      (item) =>
+        item.sourceType === "calendar" &&
+        item.sourceId === id
+    );
+
+    if (schedule?._id) {
+      await updateSchedule(schedule._id, {
         status: "completed",
       });
-
-      await fetchEvents();
-    } catch (error) {
-      console.error("Complete event error:", error);
     }
-  };
+
+    fetchEvents();
+  } catch (error) {
+    console.error("Complete event error:", error);
+  }
+};
 
   const handleDeleteEvent = async (id) => {
-    try {
-      await deleteEvent(id);
-      fetchEvents();
-    } catch (error) {
-      console.error("Delete event error:", error);
+  try {
+    await deleteEvent(id);
+
+    const schedulesResponse = await getSchedules();
+    const schedules = schedulesResponse?.data || [];
+
+    const schedule = schedules.find(
+      (item) =>
+        item.sourceType === "calendar" &&
+        item.sourceId === id
+    );
+
+    if (schedule?._id) {
+      await deleteSchedule(schedule._id);
     }
-  };
+
+    fetchEvents();
+  } catch (error) {
+    console.error("Delete event error:", error);
+  }
+};
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    return new Date(date).toLocaleDateString(
+      "en-IN",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }
+    );
   };
 
   const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString("en-IN", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    return new Date(date).toLocaleTimeString(
+      "en-IN",
+      {
+        hour: "numeric",
+        minute: "2-digit",
+      }
+    );
   };
 
   const getDateString = (date) => {
@@ -153,14 +250,20 @@ function Calendar() {
 
     return `${value.getFullYear()}-${String(
       value.getMonth() + 1
-    ).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+    ).padStart(2, "0")}-${String(
+      value.getDate()
+    ).padStart(2, "0")}`;
   };
 
-  const todayString = getDateString(new Date());
+  const todayString = getDateString(
+    new Date()
+  );
 
   const todayEvents = useMemo(() => {
     return events.filter(
-      (event) => getDateString(event.startTime) === todayString
+      (event) =>
+        getDateString(event.startTime) ===
+        todayString
     );
   }, [events, todayString]);
 
@@ -168,20 +271,24 @@ function Calendar() {
     return [...events]
       .filter(
         (event) =>
-          event.status !== "completed" &&
           new Date(event.startTime) >= new Date()
       )
       .sort(
         (a, b) =>
-          new Date(a.startTime) - new Date(b.startTime)
+          new Date(a.startTime) -
+          new Date(b.startTime)
       );
   }, [events]);
 
   const selectedEvents = useMemo(() => {
-    if (!selectedDate) return events;
+    if (!selectedDate) {
+      return events;
+    }
 
     return events.filter(
-      (event) => getDateString(event.startTime) === selectedDate
+      (event) =>
+        getDateString(event.startTime) ===
+        selectedDate
     );
   }, [events, selectedDate]);
 
@@ -217,7 +324,9 @@ function Calendar() {
 
               <p className="mt-1 text-sm font-semibold text-slate-800">
                 {todayEvents.length} event
-                {todayEvents.length !== 1 ? "s" : ""}
+                {todayEvents.length !== 1
+                  ? "s"
+                  : ""}
               </p>
             </div>
           </div>
@@ -225,7 +334,9 @@ function Calendar() {
           {/* Stats */}
           <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">Total Events</p>
+              <p className="text-sm text-slate-500">
+                Total Events
+              </p>
 
               <p className="mt-2 text-2xl font-bold text-slate-900">
                 {events.length}
@@ -233,7 +344,9 @@ function Calendar() {
             </div>
 
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">Today</p>
+              <p className="text-sm text-slate-500">
+                Today
+              </p>
 
               <p className="mt-2 text-2xl font-bold text-blue-600">
                 {todayEvents.length}
@@ -241,7 +354,9 @@ function Calendar() {
             </div>
 
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">Upcoming</p>
+              <p className="text-sm text-slate-500">
+                Upcoming
+              </p>
 
               <p className="mt-2 text-2xl font-bold text-purple-600">
                 {upcomingEvents.length}
@@ -249,7 +364,9 @@ function Calendar() {
             </div>
 
             <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-              <p className="text-sm text-slate-500">Completed</p>
+              <p className="text-sm text-slate-500">
+                Completed
+              </p>
 
               <p className="mt-2 text-2xl font-bold text-green-600">
                 {completedEvents}
@@ -264,11 +381,15 @@ function Calendar() {
             <div className="h-fit rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
               <div className="mb-6">
                 <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-50 text-xl">
-                  {editingEvent ? "✏️" : "📅"}
+                  {editingEvent
+                    ? "✏️"
+                    : "📅"}
                 </div>
 
                 <h2 className="text-xl font-bold text-slate-900">
-                  {editingEvent ? "Edit Event" : "Create Event"}
+                  {editingEvent
+                    ? "Edit Event"
+                    : "Create Event"}
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
@@ -295,7 +416,9 @@ function Calendar() {
                     type="text"
                     placeholder="e.g. Project meeting"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) =>
+                      setTitle(e.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:bg-white focus:ring-2 focus:ring-purple-100"
                   />
                 </div>
@@ -308,7 +431,11 @@ function Calendar() {
                   <textarea
                     placeholder="Add some details..."
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) =>
+                      setDescription(
+                        e.target.value
+                      )
+                    }
                     rows="3"
                     className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:bg-white focus:ring-2 focus:ring-purple-100"
                   />
@@ -322,7 +449,11 @@ function Calendar() {
                   <input
                     type="datetime-local"
                     value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
+                    onChange={(e) =>
+                      setStartTime(
+                        e.target.value
+                      )
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
                   />
                 </div>
@@ -335,7 +466,9 @@ function Calendar() {
                   <input
                     type="datetime-local"
                     value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
+                    onChange={(e) =>
+                      setEndTime(e.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
                   />
                 </div>
@@ -349,7 +482,11 @@ function Calendar() {
                     type="text"
                     placeholder="e.g. College / Google Meet"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={(e) =>
+                      setLocation(
+                        e.target.value
+                      )
+                    }
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-purple-400 focus:bg-white focus:ring-2 focus:ring-purple-100"
                   />
                 </div>
@@ -362,43 +499,45 @@ function Calendar() {
                   <select
                     value={reminderMinutes}
                     onChange={(e) =>
-                      setReminderMinutes(e.target.value)
+                      setReminderMinutes(
+                        e.target.value
+                      )
                     }
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
                   >
-                    <option value={0}>No reminder</option>
-                    <option value={5}>5 minutes before</option>
-                    <option value={10}>10 minutes before</option>
-                    <option value={15}>15 minutes before</option>
-                    <option value={30}>30 minutes before</option>
-                    <option value={60}>1 hour before</option>
+                    <option value={0}>
+                      No reminder
+                    </option>
+
+                    <option value={5}>
+                      5 minutes before
+                    </option>
+
+                    <option value={10}>
+                      10 minutes before
+                    </option>
+
+                    <option value={15}>
+                      15 minutes before
+                    </option>
+
+                    <option value={30}>
+                      30 minutes before
+                    </option>
+
+                    <option value={60}>
+                      1 hour before
+                    </option>
                   </select>
                 </div>
-
-                {/* Status - Edit Only */}
-                {editingEvent && (
-                  <div>
-                    <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                      Status
-                    </label>
-
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
-                    >
-                      <option value="upcoming">Upcoming</option>
-                      <option value="completed">Completed</option>
-                      <option value="missed">Missed</option>
-                    </select>
-                  </div>
-                )}
 
                 <button
                   type="submit"
                   className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.01] hover:shadow-md"
                 >
-                  {editingEvent ? "Update Event" : "Add Event"}
+                  {editingEvent
+                    ? "Update Event"
+                    : "Add Event"}
                 </button>
 
                 {editingEvent && (
@@ -415,6 +554,7 @@ function Calendar() {
 
             {/* Event List */}
             <div>
+
               {/* Date Filter */}
               <div className="mb-5 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -432,7 +572,9 @@ function Calendar() {
 
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setSelectedDate("")}
+                      onClick={() =>
+                        setSelectedDate("")
+                      }
                       className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
                         selectedDate === ""
                           ? "bg-purple-600 text-white shadow-sm"
@@ -443,9 +585,14 @@ function Calendar() {
                     </button>
 
                     <button
-                      onClick={() => setSelectedDate(todayString)}
+                      onClick={() =>
+                        setSelectedDate(
+                          todayString
+                        )
+                      }
                       className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                        selectedDate === todayString
+                        selectedDate ===
+                        todayString
                           ? "bg-purple-600 text-white shadow-sm"
                           : "bg-slate-50 text-slate-600 hover:bg-slate-100"
                       }`}
@@ -457,7 +604,9 @@ function Calendar() {
                       type="date"
                       value={selectedDate}
                       onChange={(e) =>
-                        setSelectedDate(e.target.value)
+                        setSelectedDate(
+                          e.target.value
+                        )
                       }
                       className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-purple-400"
                     />
@@ -485,8 +634,12 @@ function Calendar() {
                     .slice()
                     .sort(
                       (a, b) =>
-                        new Date(a.startTime) -
-                        new Date(b.startTime)
+                        new Date(
+                          a.startTime
+                        ) -
+                        new Date(
+                          b.startTime
+                        )
                     )
                     .map((event) => (
                       <div
@@ -507,16 +660,21 @@ function Calendar() {
 
                                 {event.description && (
                                   <p className="mt-1 text-sm text-slate-500">
-                                    {event.description}
+                                    {
+                                      event.description
+                                    }
                                   </p>
                                 )}
                               </div>
 
                               <div className="flex shrink-0 gap-2">
-                                {event.status !== "completed" && (
+                                {event.status !==
+                                  "completed" && (
                                   <button
                                     onClick={() =>
-                                      handleCompleteEvent(event._id)
+                                      handleCompleteEvent(
+                                        event._id
+                                      )
                                     }
                                     className="rounded-lg px-3 py-1.5 text-sm font-medium text-green-600 transition hover:bg-green-50"
                                   >
@@ -526,7 +684,9 @@ function Calendar() {
 
                                 <button
                                   onClick={() =>
-                                    handleEditEvent(event)
+                                    handleEditEvent(
+                                      event
+                                    )
                                   }
                                   className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
                                 >
@@ -535,7 +695,9 @@ function Calendar() {
 
                                 <button
                                   onClick={() =>
-                                    handleDeleteEvent(event._id)
+                                    handleDeleteEvent(
+                                      event._id
+                                    )
                                   }
                                   className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
                                 >
@@ -546,11 +708,18 @@ function Calendar() {
 
                             <div className="mt-4 flex flex-wrap gap-2">
                               <span className="rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-600">
-                                📅 {formatDate(event.startTime)}
+                                📅{" "}
+                                {formatDate(
+                                  event.startTime
+                                )}
                               </span>
 
                               <span className="rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600">
-                                🕐 {formatTime(event.startTime)}
+                                🕐{" "}
+                                {formatTime(
+                                  event.startTime
+                                )}
+
                                 {event.endTime &&
                                   ` - ${formatTime(
                                     event.endTime
@@ -559,15 +728,18 @@ function Calendar() {
 
                               {event.location && (
                                 <span className="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-500">
-                                  📍 {event.location}
+                                  📍{" "}
+                                  {event.location}
                                 </span>
                               )}
 
                               <span
                                 className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
-                                  event.status === "completed"
+                                  event.status ===
+                                  "completed"
                                     ? "border-green-100 bg-green-50 text-green-600"
-                                    : event.status === "missed"
+                                    : event.status ===
+                                      "missed"
                                     ? "border-red-100 bg-red-50 text-red-600"
                                     : "border-yellow-100 bg-yellow-50 text-yellow-600"
                                 }`}

@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
+
 import MainLayout from "../layouts/MainLayout";
+
 import {
   getNotifications,
   markNotificationRead,
   deleteNotification,
 } from "../api/notificationApi";
+
+import {
+  requestNotificationPermission,
+} from "../services/browserNotificationService";
+
+import { enableSound } from "../services/soundService";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -12,7 +20,7 @@ function Notifications() {
   const fetchNotifications = async () => {
     try {
       const data = await getNotifications();
-      setNotifications(data.data);
+      setNotifications(data.data || []);
     } catch (error) {
       console.error("Notifications error:", error);
     }
@@ -27,7 +35,10 @@ function Notifications() {
       await markNotificationRead(id);
       fetchNotifications();
     } catch (error) {
-      console.error("Mark notification read error:", error);
+      console.error(
+        "Mark notification read error:",
+        error
+      );
     }
   };
 
@@ -36,7 +47,33 @@ function Notifications() {
       await deleteNotification(id);
       fetchNotifications();
     } catch (error) {
-      console.error("Delete notification error:", error);
+      console.error(
+        "Delete notification error:",
+        error
+      );
+    }
+  };
+
+  const handleEnableNotifications = async () => {
+    const granted =
+      await requestNotificationPermission();
+
+    if (granted) {
+      alert("Notifications enabled.");
+    } else {
+      alert(
+        "Notification permission was not granted."
+      );
+    }
+  };
+
+  const handleEnableSound = async () => {
+    const enabled = await enableSound();
+
+    if (enabled) {
+      alert("Sound enabled.");
+    } else {
+      alert("Sound could not be enabled.");
     }
   };
 
@@ -99,15 +136,31 @@ function Notifications() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-purple-100 bg-white px-5 py-3 shadow-sm">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-                Unread
-              </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={handleEnableNotifications}
+                className="rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
+              >
+                Enable Notifications
+              </button>
 
-              <p className="mt-1 text-sm font-semibold text-slate-800">
-                {unreadCount} notification
-                {unreadCount !== 1 ? "s" : ""}
-              </p>
+              <button
+                onClick={handleEnableSound}
+                className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:shadow-md"
+              >
+                Enable Sound
+              </button>
+
+              <div className="rounded-2xl border border-purple-100 bg-white px-5 py-3 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                  Unread
+                </p>
+
+                <p className="mt-1 text-sm font-semibold text-slate-800">
+                  {unreadCount} notification
+                  {unreadCount !== 1 ? "s" : ""}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -143,7 +196,9 @@ function Notifications() {
                         notification.type
                       )}`}
                     >
-                      {getNotificationIcon(notification.type)}
+                      {getNotificationIcon(
+                        notification.type
+                      )}
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -174,7 +229,9 @@ function Notifications() {
                           {!notification.isRead && (
                             <button
                               onClick={() =>
-                                handleMarkRead(notification._id)
+                                handleMarkRead(
+                                  notification._id
+                                )
                               }
                               className="rounded-lg px-3 py-1.5 text-sm font-medium text-purple-600 transition hover:bg-purple-50"
                             >
@@ -184,7 +241,9 @@ function Notifications() {
 
                           <button
                             onClick={() =>
-                              handleDelete(notification._id)
+                              handleDelete(
+                                notification._id
+                              )
                             }
                             className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-500 transition hover:bg-red-50"
                           >
