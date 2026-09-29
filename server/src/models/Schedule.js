@@ -62,7 +62,16 @@ const scheduleSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+   
+    reminderTriggered: {
+  type: Boolean,
+  default: false,
+},
 
+alarmTriggered: {
+  type: Boolean,
+  default: false,
+},
     status: {
       type: String,
       enum: [

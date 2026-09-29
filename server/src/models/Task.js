@@ -15,7 +15,7 @@ const taskSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Todo", "In Progress", "Completed"],
+      enum: ["Todo", "In Progress", "Completed", "Missed"],
       default: "Todo",
     },
 
@@ -23,6 +23,14 @@ const taskSchema = new mongoose.Schema(
       type: String,
       enum: ["Low", "Medium", "High"],
       default: "Medium",
+    },
+
+    startTime: {
+      type: Date,
+    },
+
+    endTime: {
+      type: Date,
     },
 
     dueDate: {

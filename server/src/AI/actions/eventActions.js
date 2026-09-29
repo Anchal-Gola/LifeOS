@@ -14,7 +14,7 @@ export const createEventAction = async (userId, data) => {
     endTime: data.endTime || undefined,
     location: data.location || "",
     reminderMinutes: data.reminderMinutes ?? 10,
-    status: data.status || "upcoming",
+    status: data.status || "Upcoming",
   });
 };
 
@@ -38,10 +38,11 @@ export const completeEventAction = async (userId, data) => {
     data.id,
     userId,
     {
-      status: "completed",
+      status: "Completed",
     }
   );
 };
+
 export const getCompletedEventsThisWeekAction = async (
   userId,
   data

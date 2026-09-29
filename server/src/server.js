@@ -8,13 +8,20 @@ dotenv.config();
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import { PORT } from "./config/env.js";
+import {
+  startScheduleScheduler,
+} from "./services/scheduleSchedulerService.js";
 
 const startServer = async () => {
   try {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+      console.log(
+        `🚀 Server is running on http://localhost:${PORT}`
+      );
+
+      startScheduleScheduler();
     });
   } catch (error) {
     console.error("❌ Failed to start server");

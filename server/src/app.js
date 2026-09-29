@@ -24,6 +24,8 @@ import aiRoutes from "./routes/aiRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
 import studyWorkspaceRoutes from "./routes/studyWorkspaceRoutes.js";
 import scheduleRoutes from "./routes/scheduleRoutes.js";
+import pushSubscriptionRoutes from "./routes/pushSubscriptionRoutes.js";
+import userPresenceRoutes from "./routes/userPresenceRoutes.js";
 
 const app = express();
 
@@ -65,6 +67,8 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/study-workspace", studyWorkspaceRoutes);
 app.use("/api/schedules", scheduleRoutes);
+app.use("/api/push-subscriptions", pushSubscriptionRoutes);
+app.use("/api/presence", userPresenceRoutes);
 
 
 // Test Route

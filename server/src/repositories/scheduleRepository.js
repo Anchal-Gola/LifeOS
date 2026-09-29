@@ -54,9 +54,80 @@ export const getDueSchedules = async (now) => {
     scheduledFor: {
       $lte: now,
     },
+
     status: "scheduled",
+
     notificationEnabled: true,
   }).sort({
     scheduledFor: 1,
   });
+};
+
+export const getSchedulesForScheduler = async (
+  now,
+  lookAheadMinutes = 15
+) => {
+  const lookAheadTime = new Date(
+    now.getTime() +
+      lookAheadMinutes * 60 * 1000
+  );
+
+  return await Schedule.find({
+    scheduledFor: {
+      $gte: now,
+      $lte: lookAheadTime,
+    },
+
+    status: "scheduled",
+
+    $or: [
+      {
+        notificationEnabled: true,
+        reminderTriggered: false,
+      },
+      {
+        alarmEnabled: true,
+        alarmTriggered: false,
+      },
+    ],
+  }).sort({
+    scheduledFor: 1,
+  });
+};
+
+export const markReminderTriggered = async (
+  scheduleId
+) => {
+  return await Schedule.findOneAndUpdate(
+    {
+      _id: scheduleId,
+      status: "scheduled",
+      reminderTriggered: false,
+    },
+    {
+      reminderTriggered: true,
+    },
+    {
+      new: true,
+    }
+  );
+};
+
+export const markAlarmTriggered = async (
+  scheduleId
+) => {
+  return await Schedule.findOneAndUpdate(
+    {
+      _id: scheduleId,
+      status: "scheduled",
+      alarmTriggered: false,
+    },
+    {
+      alarmTriggered: true,
+      status: "triggered",
+    },
+    {
+      new: true,
+    }
+  );
 };

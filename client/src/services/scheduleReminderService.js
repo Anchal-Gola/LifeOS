@@ -158,7 +158,7 @@ export const startScheduleReminderService = async ({
 
   syncInterval = setInterval(() => {
     syncSchedules();
-  }, 10000);
+  }, 1000);
 };
 
 export const stopScheduleReminderService = () => {

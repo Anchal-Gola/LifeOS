@@ -268,6 +268,12 @@ const findEvent = () => {
 };
 
 const event = findEvent();
+
+console.log(
+  "AI EVENT TITLES:",
+  (context.events || []).map((item) => item.title)
+);
+
 console.log("AI EVENT MATCH:", event);
     /*
      * =========================
@@ -351,16 +357,16 @@ console.log("AI EVENT MATCH:", event);
  */
 
 const createGoalMatch = lowerMessage.match(
-  /^(?:add|create|make)\s+(?:a\s+)?goal\s+(.+)$/i
+  /^(?:add|create|make)\s+(?:a\s+)?goal(?:\s+(?:called|named))?\s+(.+)$/i
 );
 
 if (createGoalMatch) {
-  const title = message
-    .replace(
-      /^(add|create|make)\s+(a\s+)?goal\s+/i,
-      ""
-    )
-    .trim();
+ const title = message
+  .replace(
+    /^(add|create|make)\s+(a\s+)?goal(?:\s+(called|named))?\s+/i,
+    ""
+  )
+  .trim();
 
   if (!title) {
     const reply = "Please provide a title for the goal.";
@@ -416,15 +422,102 @@ if (createGoalMatch) {
  *
  * Examples:
  * Create event Meeting tomorrow at 10 AM
- * Add event Doctor appointment on Monday at 5 PM
+ * Create an event called Team Meeting on September 10 at 10:00 AM
+ * Create an event called Team Meeting on September 10 at 10:00 AM,
+ * ending on September 15 at 5:00 PM, with a reminder 10 minutes before it starts
  */
 
 const createEventMatch = lowerMessage.match(
-  /^(?:add|create|make)\s+(?:a\s+)?(?:event|calendar event)\s+(.+)$/i
+  /^(add|create|make)\s+(?:a|an)?\s*(?:calendar\s+)?event\b\s*(?:called|named)?\s*(.+)$/i
 );
+console.log("AI MESSAGE:", message);
+console.log("AI LOWER MESSAGE:", lowerMessage);
+console.log("CREATE EVENT MATCH:", createEventMatch);
 
 if (createEventMatch) {
-  const title = createEventMatch[1].trim();
+  let eventText = message
+  .replace(
+    /^(add|create|make)\s+(?:a|an)?\s*(?:calendar\s+)?event\s*(?:called|named)?\s+/i,
+    ""
+  )
+  .trim();
+
+  // Extract reminder
+  let reminderMinutes = 10;
+
+  const reminderMatch = eventText.match(
+    /,\s*with\s+a\s+reminder\s+(\d+)\s+minutes?\s+before\s+it\s+starts?\.?$/i
+  );
+
+  if (reminderMatch) {
+    reminderMinutes = Number(reminderMatch[1]);
+
+    eventText = eventText
+      .replace(reminderMatch[0], "")
+      .trim();
+  }
+
+  // Extract end time
+  let endTime = null;
+
+  const endMatch = eventText.match(
+    /,\s*ending\s+(?:on\s+)?(.+)$/i
+  );
+
+  if (endMatch) {
+    const endText = endMatch[1].trim();
+    const currentYear = new Date().getFullYear();
+
+    const normalizedEndText = endText
+      .replace(/,/g, "")
+      .replace(/\s+at\s+/i, " ");
+
+    const endWithYear = /\b\d{4}\b/.test(normalizedEndText)
+      ? normalizedEndText
+      : `${normalizedEndText} ${currentYear}`;
+
+    const parsedEnd = new Date(endWithYear);
+
+    if (!Number.isNaN(parsedEnd.getTime())) {
+      endTime = parsedEnd;
+    }
+
+    eventText = eventText
+      .replace(endMatch[0], "")
+      .trim();
+  }
+
+  // Extract start date/time
+  let startTime = new Date();
+
+  const startMatch = eventText.match(
+    /\s+on\s+(.+)$/i
+  );
+
+  if (startMatch) {
+    const startText = startMatch[1].trim();
+    const currentYear = new Date().getFullYear();
+
+    const normalizedStartText = startText
+      .replace(/,/g, "")
+      .replace(/\s+at\s+/i, " ");
+
+    const startWithYear = /\b\d{4}\b/.test(normalizedStartText)
+      ? normalizedStartText
+      : `${normalizedStartText} ${currentYear}`;
+
+    const parsedStart = new Date(startWithYear);
+
+    if (!Number.isNaN(parsedStart.getTime())) {
+      startTime = parsedStart;
+    }
+
+    eventText = eventText
+      .slice(0, startMatch.index)
+      .trim();
+  }
+
+  const title = eventText.trim();
 
   if (!title) {
     const reply = "Please provide a title for the event.";
@@ -451,13 +544,13 @@ if (createEventMatch) {
     data: {
       title,
       description: "",
-      startTime: new Date(),
-      endTime: null,
+      startTime,
+      endTime,
       location: "",
-      reminderMinutes: 10,
-      status: "upcoming",
+      reminderMinutes,
+     status: "Upcoming",
     },
-  });
+  })
 
   const reply = `Done! I created the calendar event **${newEvent.title}**.`;
 
@@ -476,8 +569,6 @@ if (createEventMatch) {
     conversationId: conversation._id,
   });
 }
-  
-
     /*
      * =========================
      * ADD STUDY TOPIC
@@ -706,7 +797,14 @@ if (createEventMatch) {
       lowerMessage.includes("delete") ||
       lowerMessage.includes("remove");
 
-   if (isDeleteRequest && task && !habit) {
+  if (
+  isDeleteRequest &&
+  task &&
+  !habit &&
+  !lowerMessage.includes("event") &&
+  !lowerMessage.includes("calendar") &&
+  !lowerMessage.includes("meeting")
+) {
       await deleteTaskService(task.id, userId);
 
       const reply = `Done! I deleted **${task.title}** from your tasks.`;
@@ -733,10 +831,8 @@ if (createEventMatch) {
  */
 
 const isDeleteEventRequest =
-  (lowerMessage.includes("delete") ||
-    lowerMessage.includes("remove")) &&
-  (lowerMessage.includes("event") ||
-    lowerMessage.includes("calendar"));
+  lowerMessage.includes("delete") ||
+  lowerMessage.includes("remove");
 
 if (isDeleteEventRequest && event) {
   const deletedEvent = await runAIAction({
@@ -831,13 +927,11 @@ if (isEventStatusQuery) {
 const isCompleteEventRequest =
   event &&
   (lowerMessage.includes("complete") ||
-    lowerMessage.includes("completed") ||
-    lowerMessage.includes("finish") ||
-    lowerMessage.includes("finished") ||
-    lowerMessage.includes("done") ||
-    lowerMessage.includes("mark")) &&
-  (lowerMessage.includes("event") ||
-    lowerMessage.includes("meeting"));
+   lowerMessage.includes("completed") ||
+   lowerMessage.includes("finish") ||
+   lowerMessage.includes("finished") ||
+   lowerMessage.includes("done") ||
+   lowerMessage.includes("mark"));
 
 if (isCompleteEventRequest) {
   const updatedEvent = await runAIAction({
@@ -991,7 +1085,7 @@ if (event && eventRenameMatch) {
       }
     }
 
-   if (requestedStatus && task && !habit) {
+ if (requestedStatus && task && !habit && !event) {
      const updatedTask = await runAIAction({
   action: "update_task",
   userId,
@@ -1124,14 +1218,16 @@ if (event && eventRenameMatch) {
  */
 
 const createHabitMatch = lowerMessage.match(
-  /^(?:add|create|make)\s+(?:a\s+)?habit\s+(.+?)(?:\s+with\s+(daily|weekly)\s+frequency)?$/i
+  /^(?:add|create|make)\s+(?:a\s+)?(?:(daily|weekly)\s+)?habit(?:\s+called)?\s+(.+?)(?:\s+with\s+(daily|weekly)\s+frequency)?$/i
 );
 
 if (createHabitMatch) {
-  const name = createHabitMatch[1].trim();
-  const frequency = createHabitMatch[2]
-    ? createHabitMatch[2].toLowerCase()
-    : "daily";
+ const frequency =
+  createHabitMatch[1] ||
+  createHabitMatch[3] ||
+  "daily";
+
+const name = createHabitMatch[2].trim();
 
   if (!name) {
     const reply = "Please provide a name for the habit.";
@@ -1342,6 +1438,50 @@ if (habit && habitRenameMatch) {
 
   const reply = `Done! I renamed the habit to **${updatedHabit.name}**.`;
 
+  const conversation = await saveConversation(reply);
+
+  if (!conversation) {
+    return res.status(404).json({
+      success: false,
+      message: "Conversation not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    reply,
+    conversationId: conversation._id,
+  });
+}
+
+/*
+ * =========================
+ * UPDATE HABIT DESCRIPTION
+ * =========================
+ *
+ * Example:
+ * Update habit Exercise description to Morning workout
+ */
+
+const habitDescriptionMatch = lowerMessage.match(
+  /^(?:update|edit|change)\s+(?:habit\s+)?(.+?)\s+description\s+(?:to|as)\s+(.+)$/i
+);
+
+if (habit && habitDescriptionMatch) {
+  const newDescription = habitDescriptionMatch[2].trim();
+
+  const updatedHabit = await runAIAction({
+    action: "update_habit",
+    userId,
+    data: {
+      id: habit.id || habit._id,
+      updates: {
+        description: newDescription,
+      },
+    },
+  });
+
+  const reply = `Done! I updated **${updatedHabit.name}** description.`;
   const conversation = await saveConversation(reply);
 
   if (!conversation) {
@@ -1579,7 +1719,7 @@ if (isDeleteNoteRequest && note) {
  */
 
 const noteRenameMatch = lowerMessage.match(
-  /^(?:rename|change)\s+note\s+(.+?)\s+(?:to|as)\s+(.+)$/i
+  /^(?:rename|change)\s+(?:the\s+)?note(?:\s+titled|\s+named)?\s+["']?(.+?)["']?\s+(?:to|as)\s+["']?(.+?)["']?$/i
 );
 
 if (note && noteRenameMatch) {
@@ -1853,7 +1993,7 @@ if (markNotificationReadMatch) {
  */
 
 const deleteNotificationMatch = lowerMessage.match(
-  /^(?:delete|remove)\s+(?:notification\s+)?(.+)$/i
+  /^(?:delete|remove)\s+(?:a\s+)?notification\s+(?:called\s+|titled\s+|named\s+)?(.+)$/i
 );
 
 if (deleteNotificationMatch) {
@@ -2057,7 +2197,7 @@ const journal = findJournal();
  */
 
 const createJournalMatch = lowerMessage.match(
-  /^(?:add|create|make)\s+(?:a\s+)?journal\s+(.+)$/i
+  /^(?:add|create|make)\s+(?:a\s+)?journal(?:\s+entry)?(?:\s+(?:about|on|called|titled))?\s+(.+)$/i
 );
 
 if (createJournalMatch) {
@@ -2096,9 +2236,8 @@ if (createJournalMatch) {
  */
 
 const isDeleteJournalRequest =
-  (lowerMessage.includes("delete") ||
-    lowerMessage.includes("remove")) &&
-  lowerMessage.includes("journal");
+  lowerMessage.includes("delete") ||
+  lowerMessage.includes("remove");
 
 if (isDeleteJournalRequest && journal) {
   const deletedJournal = await runAIAction({
@@ -2147,11 +2286,14 @@ if (isDeleteJournalRequest && journal) {
 }
 
 /*
- * RENAME JOURNAL
+ * UPDATE JOURNAL
  */
 
+/*
+ * RENAME JOURNAL
+ */
 const journalRenameMatch = lowerMessage.match(
-  /^(?:rename|change)\s+(?:journal\s+)?(.+?)\s+(?:to|as)\s+(.+)$/i
+  /^(?:rename|change)\s+(?:the\s+)?journal(?:\s+entry)?\s+(.+?)\s+(?:to|as)\s+(.+)$/i
 );
 
 if (journal && journalRenameMatch) {
@@ -2185,10 +2327,45 @@ if (journal && journalRenameMatch) {
     conversationId: conversation._id,
   });
 }
-console.log(
-  "WEEKLY TASKS:",
-  JSON.stringify(context.tasks, null, 2)
+
+/*
+ * UPDATE JOURNAL CONTENT
+ */
+const journalUpdateMatch = lowerMessage.match(
+  /^(?:update|edit|change)\s+(?:the\s+)?journal(?:\s+entry)?\s+(.+?)\s+(?:to|with)\s+(.+)$/i
 );
+
+if (journal && journalUpdateMatch) {
+  const newContent = journalUpdateMatch[2].trim();
+
+  const updatedJournal = await runAIAction({
+    action: "update_journal",
+    userId,
+    data: {
+      id: journal.id || journal._id,
+      updates: {
+        content: newContent,
+      },
+    },
+  });
+
+  const reply = `Done! I updated the journal entry **${updatedJournal.title}**.`;
+
+  const conversation = await saveConversation(reply);
+
+  if (!conversation) {
+    return res.status(404).json({
+      success: false,
+      message: "Conversation not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    reply,
+    conversationId: conversation._id,
+  });
+}
    /*
  * =========================
  * WEEKLY ACCOMPLISHMENTS
