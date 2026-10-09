@@ -1,4 +1,3 @@
-
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -9,6 +8,7 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -38,12 +38,10 @@ function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 px-6 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center justify-center">
-
         <div className="grid w-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl lg:grid-cols-2">
 
           {/* Left Side */}
           <div className="hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-12 text-white lg:flex lg:flex-col lg:justify-between">
-
             <div>
               <div className="mb-8 flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl backdrop-blur">
@@ -73,12 +71,10 @@ function Login() {
                 "Small steps every day create remarkable results."
               </p>
             </div>
-
           </div>
 
           {/* Right Side */}
           <div className="flex items-center justify-center p-8 sm:p-12">
-
             <div className="w-full max-w-md">
 
               {/* Mobile Logo */}
@@ -87,7 +83,7 @@ function Login() {
                   ✨
                 </div>
 
-                <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text">
+                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-2xl font-bold text-transparent">
                   LifeOS
                 </span>
               </div>
@@ -130,13 +126,65 @@ function Login() {
                     Password
                   </label>
 
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-purple-400 focus:bg-white focus:ring-4 focus:ring-purple-100"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowPassword((prev) => !prev)
+                      }
+                      className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-purple-50 hover:text-purple-600"
+                      aria-label={
+                        showPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
+                      title={
+                        showPassword
+                          ? "Hide password"
+                          : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <svg
+                          width="19"
+                          height="19"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      ) : (
+                        <svg
+                          width="19"
+                          height="19"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 3l18 18" />
+                          <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                          <path d="M9.9 4.2A10.7 10.7 0 0 1 12 4c6.5 0 10 8 10 8a18.4 18.4 0 0 1-3.1 4.4" />
+                          <path d="M6.1 6.1C3.5 8.1 2 12 2 12s3.5 8 10 8a10.7 10.7 0 0 0 2.1-.2" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Error */}
@@ -154,14 +202,15 @@ function Login() {
                 >
                   {loading ? "Signing in..." : "Sign in"}
                 </button>
-
               </form>
 
               <div className="mt-8 flex items-center gap-3">
                 <div className="h-px flex-1 bg-slate-200" />
+
                 <span className="text-xs text-slate-400">
                   LifeOS Intelligence
                 </span>
+
                 <div className="h-px flex-1 bg-slate-200" />
               </div>
 
@@ -169,11 +218,8 @@ function Login() {
                 By continuing, you agree to use LifeOS responsibly
                 and keep your account credentials secure.
               </p>
-
             </div>
-
           </div>
-
         </div>
       </div>
     </div>

@@ -25,7 +25,6 @@ const Icon = ({ name, size = 20 }) => {
         <rect x="14" y="14" width="7" height="7" rx="1.5" />
       </>
     ),
-
     ai: (
       <>
         <path d="M12 3v2" />
@@ -39,7 +38,6 @@ const Icon = ({ name, size = 20 }) => {
         <circle cx="12" cy="12" r="4" />
       </>
     ),
-
     tasks: (
       <>
         <rect x="4" y="3" width="16" height="18" rx="2" />
@@ -48,7 +46,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M8 15h5" />
       </>
     ),
-
     goals: (
       <>
         <circle cx="12" cy="12" r="8" />
@@ -56,7 +53,6 @@ const Icon = ({ name, size = 20 }) => {
         <circle cx="12" cy="12" r="1" />
       </>
     ),
-
     habits: (
       <>
         <path d="M20 11a8 8 0 0 0-14.9-4" />
@@ -65,7 +61,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M20 20v-5h-5" />
       </>
     ),
-
     calendar: (
       <>
         <rect x="3" y="4" width="18" height="17" rx="2" />
@@ -79,7 +74,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M12 17h.01" />
       </>
     ),
-
     journal: (
       <>
         <path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2V4Z" />
@@ -88,7 +82,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M10 12h5" />
       </>
     ),
-
     notes: (
       <>
         <path d="M5 3h10l4 4v14H5z" />
@@ -97,7 +90,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M8 16h6" />
       </>
     ),
-
     study: (
       <>
         <path d="m4 6 8-3 8 3-8 3-8-3Z" />
@@ -105,7 +97,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M20 7v6" />
       </>
     ),
-
     documents: (
       <>
         <path d="M6 3h9l4 4v14H6z" />
@@ -114,21 +105,18 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M9 16h6" />
       </>
     ),
-
     notifications: (
       <>
         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
         <path d="M10 21h4" />
       </>
     ),
-
     search: (
       <>
         <circle cx="11" cy="11" r="6.5" />
         <path d="m16 16 4.5 4.5" />
       </>
     ),
-
     menu: (
       <>
         <path d="M4 6h16" />
@@ -136,18 +124,14 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M4 18h16" />
       </>
     ),
-
     chevronLeft: <path d="m14 8-4 4 4 4" />,
-
     chevronRight: <path d="m10 8 4 4-4 4" />,
-
     arrowRight: (
       <>
         <path d="M5 12h14" />
         <path d="m13 6 6 6-6 6" />
       </>
     ),
-
     logout: (
       <>
         <path d="M10 17l5-5-5-5" />
@@ -155,7 +139,6 @@ const Icon = ({ name, size = 20 }) => {
         <path d="M21 19V5a2 2 0 0 0-2-2h-6" />
       </>
     ),
-
     user: (
       <>
         <circle cx="12" cy="8" r="3.5" />
@@ -167,16 +150,11 @@ const Icon = ({ name, size = 20 }) => {
   return <svg {...common}>{icons[name]}</svg>;
 };
 
-function Navbar({
-  sidebarCollapsed = false,
-  onToggleSidebar,
-}) {
+function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
   const { theme, toggleTheme } = useTheme();
   const { user, loading, logout } = useContext(AuthContext);
-
   const navigate = useNavigate();
   const location = useLocation();
-
   const isLandingPage = location.pathname === "/";
 
   const [search, setSearch] = useState("");
@@ -206,9 +184,7 @@ function Navbar({
         setShowResults(true);
 
         const response = await axios.get(
-          `http://localhost:5000/api/search?q=${encodeURIComponent(
-            query
-          )}`,
+          `http://localhost:5000/api/search?q=${encodeURIComponent(query)}`,
           {
             withCredentials: true,
           }
@@ -313,19 +289,21 @@ function Navbar({
   };
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      setAccountMenuOpen(false);
-      setMobileMenuOpen(false);
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
+  setAccountMenuOpen(false);
+  setMobileMenuOpen(false);
 
+  // Clear React auth state
+  try {
+    await logout();
+  } catch (error) {
+    console.error("Logout API error:", error);
+  }
+
+  // Force navigation to the Login page
+  window.location.replace("/login");
+};
   const getUserInitial = () => {
     if (!user?.name) return "U";
-
     return user.name.trim().charAt(0).toUpperCase();
   };
 
@@ -365,7 +343,6 @@ function Navbar({
         },
       ],
     },
-
     {
       title: "Personal",
       items: [
@@ -427,19 +404,22 @@ function Navbar({
                       ? item.label
                       : undefined
                   }
-                  className={`group flex w-full items-center rounded-2xl transition-all duration-200 ${sidebarCollapsed && !mobile
-                    ? "justify-center px-2 py-2.5"
-                    : "gap-3 px-3 py-2.5"
-                    } ${active
+                  className={`group flex w-full items-center rounded-2xl transition-all duration-200 ${
+                    sidebarCollapsed && !mobile
+                      ? "justify-center px-2 py-2.5"
+                      : "gap-3 px-3 py-2.5"
+                  } ${
+                    active
                       ? "bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-500 text-white shadow-lg shadow-violet-200"
                       : "text-slate-600 hover:bg-violet-50 hover:text-violet-700"
-                    }`}
+                  }`}
                 >
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${active
-                      ? "bg-white/15"
-                      : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-violet-600"
-                      }`}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                      active
+                        ? "bg-white/15"
+                        : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-violet-600"
+                    }`}
                   >
                     <Icon name={item.icon} size={18} />
                   </span>
@@ -458,15 +438,10 @@ function Navbar({
     </div>
   );
 
-  /* =========================================================
-     PUBLIC LANDING NAVBAR
-     ========================================================= */
-
   if (isLandingPage) {
     return (
       <nav className="sticky top-0 z-50 border-b border-violet-100/80 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8">
-          {/* Logo */}
           <button
             onClick={() => navigate("/")}
             className="bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent sm:text-3xl"
@@ -476,7 +451,6 @@ function Navbar({
 
           {!loading && (
             <>
-              {/* Logged out */}
               {!user ? (
                 <div className="hidden items-center gap-2 md:flex">
                   <button
@@ -509,7 +483,6 @@ function Navbar({
                   </button>
                 </div>
               ) : (
-                /* Logged in */
                 <div className="hidden items-center gap-2 md:flex">
                   <button
                     onClick={() => scrollToSection("features")}
@@ -549,7 +522,6 @@ function Navbar({
                           <p className="truncate text-sm font-bold text-slate-900">
                             {user.name}
                           </p>
-
                           <p className="truncate text-xs text-slate-500">
                             {user.email}
                           </p>
@@ -563,20 +535,23 @@ function Navbar({
                           Dashboard
                         </button>
 
-                        <button
-                          onClick={handleLogout}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
-                        >
-                          <Icon name="logout" size={17} />
-                          Logout
-                        </button>
+                      <button
+  type="button"
+  onClick={() => {
+    console.log("LOGOUT BUTTON CLICKED");
+    alert("Logout clicked");
+  }}
+  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
+>
+  <Icon name="logout" size={17} />
+  Logout
+</button>
                       </div>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Mobile */}
               <div className="flex items-center gap-2 md:hidden">
                 {user && (
                   <button
@@ -608,7 +583,6 @@ function Navbar({
           )}
         </div>
 
-        {/* Mobile Public Menu */}
         {mobileMenuOpen && (
           <div className="absolute inset-x-0 top-[76px] border-b border-violet-100 bg-white p-4 shadow-xl md:hidden">
             <div className="space-y-2">
@@ -669,13 +643,8 @@ function Navbar({
     );
   }
 
-  /* =========================================================
-     LOGGED-IN APP SHELL
-     ========================================================= */
-
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside
         className="fixed inset-y-0 left-0 z-50 hidden border-r border-violet-100 bg-white lg:block"
         style={{
@@ -686,10 +655,11 @@ function Navbar({
       >
         <div className="flex h-full flex-col">
           <div
-            className={`flex h-20 items-center border-b border-violet-100 ${sidebarCollapsed
-              ? "justify-center px-2"
-              : "justify-between px-5"
-              }`}
+            className={`flex h-20 items-center border-b border-violet-100 ${
+              sidebarCollapsed
+                ? "justify-center px-2"
+                : "justify-between px-5"
+            }`}
           >
             <button
               onClick={() => navigate("/")}
@@ -741,7 +711,6 @@ function Navbar({
                   <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm">
                     <Icon name="ai" size={16} />
                   </span>
-
                   <p className="text-xs font-bold text-violet-700">
                     LifeOS Intelligence
                   </p>
@@ -763,7 +732,6 @@ function Navbar({
         </div>
       </aside>
 
-      {/* Desktop App Header */}
       <header
         className="fixed right-0 top-0 z-40 hidden h-20 border-b border-violet-100 bg-white/95 shadow-[0_4px_24px_rgba(99,102,241,0.06)] backdrop-blur-xl lg:block"
         style={{
@@ -781,7 +749,6 @@ function Navbar({
             </span>
           </div>
 
-          {/* Search */}
           <div
             ref={searchRef}
             className="relative ml-auto w-full max-w-2xl"
@@ -830,7 +797,9 @@ function Navbar({
                     {results.map((result) => (
                       <button
                         key={`${result.type}-${result.id}`}
-                        onMouseDown={(event) => event.stopPropagation()}
+                        onMouseDown={(event) =>
+                          event.stopPropagation()
+                        }
                         onClick={() =>
                           handleResultClick(result)
                         }
@@ -862,7 +831,6 @@ function Navbar({
             )}
           </div>
 
-          {/* Authenticated Account */}
           <div
             ref={accountRef}
             className="relative flex shrink-0 items-center gap-2"
@@ -899,12 +867,14 @@ function Navbar({
             )}
 
             {accountMenuOpen && user && (
-              <div className="absolute right-0 top-14 w-60 overflow-hidden rounded-2xl border border-violet-100 bg-white p-2 shadow-2xl">
+            <div
+  className="absolute right-0 top-14 z-[9999] w-60 overflow-hidden rounded-2xl border border-violet-100 bg-white p-2 shadow-2xl"
+  onMouseDown={(event) => event.stopPropagation()}
+>
                 <div className="border-b border-slate-100 px-3 py-3">
                   <p className="truncate text-sm font-bold text-slate-900">
                     {user.name}
                   </p>
-
                   <p className="truncate text-xs text-slate-500">
                     {user.email}
                   </p>
@@ -934,7 +904,6 @@ function Navbar({
         </div>
       </header>
 
-      {/* Mobile App Header */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-20 items-center gap-3 border-b border-violet-100 bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:hidden">
         <button
           onClick={() => setMobileMenuOpen(true)}
@@ -999,7 +968,6 @@ function Navbar({
               <p className="truncate text-sm font-bold text-slate-900">
                 {user.name}
               </p>
-
               <p className="truncate text-xs text-slate-500">
                 {user.email}
               </p>
@@ -1027,7 +995,6 @@ function Navbar({
         )}
       </div>
 
-      {/* Mobile Sidebar */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-[70] bg-slate-950/20 backdrop-blur-sm lg:hidden"
@@ -1070,7 +1037,6 @@ function Navbar({
                       <p className="truncate text-sm font-bold text-slate-800">
                         {user.name}
                       </p>
-
                       <p className="truncate text-xs text-slate-500">
                         {user.email}
                       </p>

@@ -17,8 +17,14 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await logoutUser();
-    setUser(null);
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error("Logout API error:", error);
+    } finally {
+      // Always clear the logged-in user from React state
+      setUser(null);
+    }
   };
 
   useEffect(() => {
@@ -38,9 +44,16 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, logout }}
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
+
+export default AuthProvider;
