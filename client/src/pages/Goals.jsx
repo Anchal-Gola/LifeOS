@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import {
@@ -22,7 +23,7 @@ function Goals() {
   const fetchGoals = async () => {
     try {
       const data = await getGoals();
-      setGoals(data.data);
+      setGoals(Array.isArray(data.data) ? data.data : []);
     } catch (error) {
       console.error("Goals error:", error);
     }
@@ -34,12 +35,11 @@ function Goals() {
 
   const handleCreateGoal = async (e) => {
     e.preventDefault();
-
     if (!title.trim()) return;
 
     try {
       await createGoal({
-        title,
+        title: title.trim(),
         description,
         deadline: deadline || undefined,
       });
@@ -47,8 +47,7 @@ function Goals() {
       setTitle("");
       setDescription("");
       setDeadline("");
-
-      fetchGoals();
+      await fetchGoals();
     } catch (error) {
       console.error("Create goal error:", error);
     }
@@ -56,11 +55,8 @@ function Goals() {
 
   const handleCompleteToday = async (goal) => {
     try {
-      const today = new Date().toISOString();
-
-      await completeGoalToday(goal._id, today);
-
-      fetchGoals();
+      await completeGoalToday(goal._id, new Date().toISOString());
+      await fetchGoals();
     } catch (error) {
       console.error("Complete goal error:", error);
     }
@@ -69,30 +65,54 @@ function Goals() {
   const isCompletedToday = (goal) => {
     const today = new Date().toDateString();
 
-    return goal.completedDates?.some(
+    return (goal.completedDates || []).some(
       (date) => new Date(date).toDateString() === today
     );
   };
 
   const calculateProgress = (goal) => {
-    if (!goal.deadline || !goal.startDate) {
-      return 0;
+    if (goal.status === "completed") return 100;
+
+    // For goals without a deadline, show today's completion.
+    if (!goal.deadline) {
+      return isCompletedToday(goal) ? 100 : 0;
     }
 
-    const start = new Date(goal.startDate);
+    const startValue = goal.startDate || goal.createdAt;
+    if (!startValue) {
+      return isCompletedToday(goal) ? 100 : 0;
+    }
+
+    const start = new Date(startValue);
     const deadlineDate = new Date(goal.deadline);
 
-    const totalDays = Math.ceil(
-      (deadlineDate - start) / (1000 * 60 * 60 * 24)
+    if (
+      Number.isNaN(start.getTime()) ||
+      Number.isNaN(deadlineDate.getTime())
+    ) {
+      return isCompletedToday(goal) ? 100 : 0;
+    }
+
+    start.setHours(0, 0, 0, 0);
+    deadlineDate.setHours(0, 0, 0, 0);
+
+    const totalDays = Math.max(
+      1,
+      Math.ceil(
+        (deadlineDate.getTime() - start.getTime()) /
+          (1000 * 60 * 60 * 24)
+      ) + 1
     );
 
-    if (totalDays <= 0) return 100;
-
-    const completedDays = goal.completedDates?.length || 0;
+    const completedDates = new Set(
+      (goal.completedDates || []).map((date) =>
+        new Date(date).toDateString()
+      )
+    );
 
     return Math.min(
       100,
-      Math.round((completedDays / totalDays) * 100)
+      Math.round((completedDates.size / totalDays) * 100)
     );
   };
 
@@ -117,13 +137,13 @@ function Goals() {
 
     try {
       await updateGoal(id, {
-        title: editTitle,
+        title: editTitle.trim(),
         description: editDescription,
         deadline: editDeadline || undefined,
       });
 
       handleCancelEdit();
-      fetchGoals();
+      await fetchGoals();
     } catch (error) {
       console.error("Update goal error:", error);
     }
@@ -132,7 +152,7 @@ function Goals() {
   const handleDeleteGoal = async (id) => {
     try {
       await deleteGoal(id);
-      fetchGoals();
+      await fetchGoals();
     } catch (error) {
       console.error("Delete goal error:", error);
     }
@@ -154,7 +174,6 @@ function Goals() {
     <MainLayout>
       <div className="min-h-screen bg-[#f7f7ff] px-5 py-8 text-[#172033] transition-colors duration-300 dark:bg-[#0b1120] dark:text-white sm:px-8 lg:px-10">
         <div className="mx-auto max-w-7xl">
-
           {/* Header */}
           <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -210,12 +229,10 @@ function Goals() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xl text-white shadow-lg shadow-violet-500/20">
                   🎯
                 </div>
-
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-violet-500 dark:text-violet-300">
                     New Goal
                   </p>
-
                   <h2 className="mt-1 text-xl font-black">
                     Create a goal
                   </h2>
@@ -232,7 +249,6 @@ function Goals() {
                   <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">
                     Goal title
                   </label>
-
                   <input
                     type="text"
                     placeholder="What do you want to achieve?"
@@ -246,7 +262,6 @@ function Goals() {
                   <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">
                     Description
                   </label>
-
                   <textarea
                     placeholder="Add some details..."
                     value={description}
@@ -260,7 +275,6 @@ function Goals() {
                   <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">
                     Deadline
                   </label>
-
                   <div className="flex h-[calc(100%-28px)] flex-col gap-4">
                     <input
                       type="date"
@@ -268,7 +282,6 @@ function Goals() {
                       onChange={(e) => setDeadline(e.target.value)}
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-violet-500 dark:focus:bg-slate-900 dark:focus:ring-violet-500/10"
                     />
-
                     <button
                       type="submit"
                       className="mt-auto w-full rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-500 px-5 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-violet-500/20 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-500/25"
@@ -287,15 +300,12 @@ function Goals() {
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-500 dark:text-violet-300">
                 Goal Workspace
               </p>
-
               <h2 className="mt-1 text-2xl font-black tracking-tight">
                 Your Goals
               </h2>
             </div>
-
             <p className="text-sm font-semibold text-slate-400">
-              {goals.length} goal
-              {goals.length !== 1 ? "s" : ""}
+              {goals.length} goal{goals.length !== 1 ? "s" : ""}
             </p>
           </div>
 
@@ -305,11 +315,7 @@ function Goals() {
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 text-2xl dark:from-violet-950/40 dark:to-fuchsia-950/30">
                 🎯
               </div>
-
-              <h3 className="mt-5 text-lg font-black">
-                No goals yet
-              </h3>
-
+              <h3 className="mt-5 text-lg font-black">No goals yet</h3>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
                 Create your first goal and start turning your plans into
                 progress.
@@ -332,27 +338,20 @@ function Goals() {
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-lg dark:bg-violet-500/10">
                           ✎
                         </div>
-
                         <div>
                           <p className="text-xs font-bold uppercase tracking-wide text-violet-500 dark:text-violet-300">
                             Editing
                           </p>
-
-                          <h3 className="font-black">
-                            Update Goal
-                          </h3>
+                          <h3 className="font-black">Update Goal</h3>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                         <input
                           value={editTitle}
-                          onChange={(e) =>
-                            setEditTitle(e.target.value)
-                          }
+                          onChange={(e) => setEditTitle(e.target.value)}
                           className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-violet-500 dark:focus:bg-slate-900"
                         />
-
                         <textarea
                           value={editDescription}
                           onChange={(e) =>
@@ -361,27 +360,23 @@ function Goals() {
                           rows="4"
                           className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-violet-500 dark:focus:bg-slate-900"
                         />
-
                         <input
                           type="date"
                           value={editDeadline}
-                          onChange={(e) =>
-                            setEditDeadline(e.target.value)
-                          }
+                          onChange={(e) => setEditDeadline(e.target.value)}
                           className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-700 outline-none focus:border-violet-400 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-violet-500"
                         />
 
                         <div className="grid grid-cols-2 gap-3">
                           <button
-                            onClick={() =>
-                              handleSaveEdit(goal._id)
-                            }
+                            type="button"
+                            onClick={() => handleSaveEdit(goal._id)}
                             className="rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 py-3 text-sm font-extrabold text-white shadow-md"
                           >
                             Save Changes
                           </button>
-
                           <button
+                            type="button"
                             onClick={handleCancelEdit}
                             className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                           >
@@ -398,7 +393,6 @@ function Goals() {
                     key={goal._id}
                     className="group relative overflow-hidden rounded-3xl border border-slate-100 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-[#111827] dark:hover:border-violet-400/20"
                   >
-                    {/* Accent */}
                     <div
                       className={`absolute left-0 top-0 h-full w-1 ${
                         isCompleted
@@ -406,28 +400,21 @@ function Goals() {
                           : "bg-gradient-to-b from-violet-500 to-fuchsia-500"
                       }`}
                     />
-
                     <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-400/10 blur-[65px] transition group-hover:bg-fuchsia-400/15" />
 
                     <div className="relative">
-
-                      {/* Top */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 text-lg dark:from-violet-500/15 dark:to-fuchsia-500/10">
                             🎯
                           </div>
-
                           <h3
                             className={`text-xl font-black tracking-tight ${
-                              isCompleted
-                                ? "text-slate-400 line-through"
-                                : ""
+                              isCompleted ? "text-slate-400 line-through" : ""
                             }`}
                           >
                             {goal.title}
                           </h3>
-
                           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                             {goal.description || "No description"}
                           </p>
@@ -450,12 +437,10 @@ function Goals() {
                           <span className="text-xs font-bold uppercase tracking-wide text-slate-400">
                             Progress
                           </span>
-
                           <span className="text-sm font-black text-violet-600 dark:text-violet-300">
                             {progress}%
                           </span>
                         </div>
-
                         <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
@@ -474,15 +459,15 @@ function Goals() {
                           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                             Deadline
                           </p>
-
                           <p className="mt-1 text-sm font-bold text-slate-700 dark:text-slate-200">
-                            {new Date(
-                              goal.deadline
-                            ).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}
+                            {new Date(goal.deadline).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
                           </p>
                         </div>
                       )}
@@ -490,9 +475,8 @@ function Goals() {
                       {/* Complete today */}
                       {!isCompleted && (
                         <button
-                          onClick={() =>
-                            handleCompleteToday(goal)
-                          }
+                          type="button"
+                          onClick={() => handleCompleteToday(goal)}
                           disabled={completedToday}
                           className={`mt-5 w-full rounded-2xl px-4 py-3 text-sm font-extrabold transition ${
                             completedToday
@@ -509,17 +493,16 @@ function Goals() {
                       {/* Actions */}
                       <div className="mt-5 flex gap-3 border-t border-slate-100 pt-5 dark:border-slate-800">
                         <button
+                          type="button"
                           onClick={() => handleEditClick(goal)}
                           className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-violet-400/20 dark:hover:bg-violet-500/10 dark:hover:text-violet-300"
                         >
                           Edit
                         </button>
-
                         <button
-                          onClick={() =>
-                            handleDeleteGoal(goal._id)
-                          }
-                          className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-rose-500 transition hover:border-rose-200 hover:bg-rose-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-rose-400/20 dark:hover:bg-rose-500/10"
+                          type="button"
+                          onClick={() => handleDeleteGoal(goal._id)}
+                          className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-rose-500 transition hover:border-rose-200 hover:bg-rose-50 dark:border-slate-700 dark:hover:border-rose-400/20 dark:hover:bg-rose-500/10"
                         >
                           Delete
                         </button>
@@ -539,19 +522,16 @@ function Goals() {
                   <p className="text-sm font-black text-violet-700 dark:text-violet-300">
                     Keep moving forward.
                   </p>
-
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     {completedGoals} completed · {activeGoals} active
                   </p>
                 </div>
-
                 <p className="text-xs font-semibold text-slate-400">
                   Small progress adds up.
                 </p>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </MainLayout>

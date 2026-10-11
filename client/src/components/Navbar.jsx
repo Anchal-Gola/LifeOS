@@ -1,3 +1,4 @@
+
 import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -185,9 +186,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
         const response = await axios.get(
           `http://localhost:5000/api/search?q=${encodeURIComponent(query)}`,
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
 
         setResults(response.data.data || []);
@@ -204,17 +203,11 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
       }
 
-      if (
-        accountRef.current &&
-        !accountRef.current.contains(event.target)
-      ) {
+      if (accountRef.current && !accountRef.current.contains(event.target)) {
         setAccountMenuOpen(false);
       }
     };
@@ -222,10 +215,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -289,19 +279,18 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
   };
 
   const handleLogout = async () => {
-  setAccountMenuOpen(false);
-  setMobileMenuOpen(false);
+    setAccountMenuOpen(false);
+    setMobileMenuOpen(false);
 
-  // Clear React auth state
-  try {
-    await logout();
-  } catch (error) {
-    console.error("Logout API error:", error);
-  }
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
 
-  // Force navigation to the Login page
-  window.location.replace("/login");
-};
   const getUserInitial = () => {
     if (!user?.name) return "U";
     return user.name.trim().charAt(0).toUpperCase();
@@ -311,73 +300,29 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
     {
       title: "Workspace",
       items: [
-        {
-          label: "Dashboard",
-          path: "/dashboard",
-          icon: "dashboard",
-        },
-        {
-          label: "AI Assistant",
-          path: "/ai",
-          icon: "ai",
-        },
-        {
-          label: "Tasks",
-          path: "/tasks",
-          icon: "tasks",
-        },
-        {
-          label: "Goals",
-          path: "/goals",
-          icon: "goals",
-        },
-        {
-          label: "Habits",
-          path: "/habits",
-          icon: "habits",
-        },
-        {
-          label: "Calendar",
-          path: "/calendar",
-          icon: "calendar",
-        },
+        { label: "Dashboard", path: "/dashboard", icon: "dashboard" },
+        { label: "Analytics", path: "/analytics", icon: "dashboard" },
+        { label: "AI Assistant", path: "/ai", icon: "ai" },
+        { label: "Tasks", path: "/tasks", icon: "tasks" },
+        { label: "Goals", path: "/goals", icon: "goals" },
+        { label: "Habits", path: "/habits", icon: "habits" },
+        { label: "Calendar", path: "/calendar", icon: "calendar" },
+        
       ],
     },
     {
       title: "Personal",
       items: [
-        {
-          label: "Journal",
-          path: "/journal",
-          icon: "journal",
-        },
-        {
-          label: "Notes",
-          path: "/notes",
-          icon: "notes",
-        },
-        {
-          label: "Study Workspace",
-          path: "/study-workspace",
-          icon: "study",
-        },
-        {
-          label: "Documents",
-          path: "/documents",
-          icon: "documents",
-        },
-        {
-          label: "Notifications",
-          path: "/notifications",
-          icon: "notifications",
-        },
+        { label: "Journal", path: "/journal", icon: "journal" },
+        { label: "Notes", path: "/notes", icon: "notes" },
+        { label: "Study Workspace", path: "/study-workspace", icon: "study" },
+        { label: "Documents", path: "/documents", icon: "documents" },
+        { label: "Notifications", path: "/notifications", icon: "notifications" },
       ],
     },
   ];
 
-  const isActive = (item) => {
-    return location.pathname === item.path;
-  };
+  const isActive = (item) => location.pathname === item.path;
 
   const renderNavigation = (mobile = false) => (
     <div className="space-y-7">
@@ -399,11 +344,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                 <button
                   key={item.label}
                   onClick={() => navigate(item.path)}
-                  title={
-                    !mobile && sidebarCollapsed
-                      ? item.label
-                      : undefined
-                  }
+                  title={!mobile && sidebarCollapsed ? item.label : undefined}
                   className={`group flex w-full items-center rounded-2xl transition-all duration-200 ${
                     sidebarCollapsed && !mobile
                       ? "justify-center px-2 py-2.5"
@@ -475,7 +416,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                   </button>
 
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={() => navigate("/signup")}
                     className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl"
                   >
                     Get Started
@@ -507,9 +448,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
                   <div ref={accountRef} className="relative ml-1">
                     <button
-                      onClick={() =>
-                        setAccountMenuOpen((current) => !current)
-                      }
+                      onClick={() => setAccountMenuOpen((current) => !current)}
                       className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-extrabold text-white shadow-md shadow-violet-200"
                       aria-label="Open account menu"
                     >
@@ -528,24 +467,24 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                         </div>
 
                         <button
-                          onClick={() => navigate("/dashboard")}
+                          onClick={() => {
+                            setAccountMenuOpen(false);
+                            navigate("/dashboard");
+                          }}
                           className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-violet-50 hover:text-violet-700"
                         >
                           <Icon name="dashboard" size={17} />
                           Dashboard
                         </button>
 
-                      <button
-  type="button"
-  onClick={() => {
-    console.log("LOGOUT BUTTON CLICKED");
-    alert("Logout clicked");
-  }}
-  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
->
-  <Icon name="logout" size={17} />
-  Logout
-</button>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
+                        >
+                          <Icon name="logout" size={17} />
+                          Logout
+                        </button>
                       </div>
                     )}
                   </div>
@@ -564,7 +503,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
                 {!user && (
                   <button
-                    onClick={() => navigate("/login")}
+                    onClick={() => navigate("/signup")}
                     className="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-500 px-4 py-2 text-sm font-bold text-white shadow-md shadow-violet-200"
                   >
                     Get Started
@@ -626,15 +565,26 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate("/login");
-                  }}
-                  className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-violet-50"
-                >
-                  Login
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/login");
+                    }}
+                    className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-violet-50"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/signup");
+                    }}
+                    className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-violet-700 hover:bg-violet-50"
+                  >
+                    Create account
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -649,16 +599,13 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
         className="fixed inset-y-0 left-0 z-50 hidden border-r border-violet-100 bg-white lg:block"
         style={{
           width: sidebarCollapsed ? "76px" : "260px",
-          transition:
-            "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <div className="flex h-full flex-col">
           <div
             className={`flex h-20 items-center border-b border-violet-100 ${
-              sidebarCollapsed
-                ? "justify-center px-2"
-                : "justify-between px-5"
+              sidebarCollapsed ? "justify-center px-2" : "justify-between px-5"
             }`}
           >
             <button
@@ -678,25 +625,10 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
               type="button"
               onClick={onToggleSidebar}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-100 bg-white text-slate-400 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600"
-              title={
-                sidebarCollapsed
-                  ? "Expand sidebar"
-                  : "Collapse sidebar"
-              }
-              aria-label={
-                sidebarCollapsed
-                  ? "Expand sidebar"
-                  : "Collapse sidebar"
-              }
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <Icon
-                name={
-                  sidebarCollapsed
-                    ? "chevronRight"
-                    : "chevronLeft"
-                }
-                size={17}
-              />
+              <Icon name={sidebarCollapsed ? "chevronRight" : "chevronLeft"} size={17} />
             </button>
           </div>
 
@@ -715,7 +647,6 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                     LifeOS Intelligence
                   </p>
                 </div>
-
                 <p className="mt-2 text-xs leading-5 text-slate-500">
                   Your personal productivity system is ready.
                 </p>
@@ -736,36 +667,27 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
         className="fixed right-0 top-0 z-40 hidden h-20 border-b border-violet-100 bg-white/95 shadow-[0_4px_24px_rgba(99,102,241,0.06)] backdrop-blur-xl lg:block"
         style={{
           left: sidebarCollapsed ? "76px" : "260px",
-          transition:
-            "left 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: "left 300ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <div className="flex h-full items-center gap-3 px-4 sm:px-6">
           <div className="hidden min-w-fit xl:block">
             <span className="rounded-xl bg-violet-50 px-5 py-3 text-base font-bold tracking-wide text-violet-700">
-              {location.pathname === "/dashboard"
-                ? "Daily overview"
-                : "LifeOS workspace"}
+              {location.pathname === "/dashboard" ? "Daily overview" : "LifeOS workspace"}
             </span>
           </div>
 
-          <div
-            ref={searchRef}
-            className="relative ml-auto w-full max-w-2xl"
-          >
+          <div ref={searchRef} className="relative ml-auto w-full max-w-2xl">
             <div className="relative">
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-violet-400">
                 <Icon name="search" size={18} />
               </span>
-
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onFocus={() => {
-                  if (search.trim()) {
-                    setShowResults(true);
-                  }
+                  if (search.trim()) setShowResults(true);
                 }}
                 placeholder="Search anything in LifeOS..."
                 className="w-full rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50/70 via-white to-blue-50/60 py-3 pl-11 pr-4 text-sm font-medium text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
@@ -783,11 +705,9 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                     <div className="flex justify-center text-violet-400">
                       <Icon name="search" size={24} />
                     </div>
-
                     <p className="mt-2 text-sm font-semibold text-slate-700">
                       No results found
                     </p>
-
                     <p className="mt-1 text-xs text-slate-400">
                       Try another search term.
                     </p>
@@ -797,28 +717,20 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                     {results.map((result) => (
                       <button
                         key={`${result.type}-${result.id}`}
-                        onMouseDown={(event) =>
-                          event.stopPropagation()
-                        }
-                        onClick={() =>
-                          handleResultClick(result)
-                        }
+                        onMouseDown={(event) => event.stopPropagation()}
+                        onClick={() => handleResultClick(result)}
                         className="flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition hover:bg-violet-50"
                       >
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 text-sm font-bold text-violet-700">
                           {getResultIcon(result.type)}
                         </div>
-
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold text-slate-800">
                             {result.title || "Untitled"}
                           </p>
-
                           <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
-                            {result.description ||
-                              "No description"}
+                            {result.description || "No description"}
                           </p>
-
                           <span className="mt-1 inline-block text-[11px] font-bold uppercase tracking-wide text-violet-600">
                             {result.type}
                           </span>
@@ -831,10 +743,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
             )}
           </div>
 
-          <div
-            ref={accountRef}
-            className="relative flex shrink-0 items-center gap-2"
-          >
+          <div ref={accountRef} className="relative flex shrink-0 items-center gap-2">
             <button
               onClick={() => navigate("/notifications")}
               className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-100 bg-white text-slate-500 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600"
@@ -855,9 +764,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
             {!loading && user && (
               <button
-                onClick={() =>
-                  setAccountMenuOpen((current) => !current)
-                }
+                onClick={() => setAccountMenuOpen((current) => !current)}
                 className="ml-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-extrabold text-white shadow-md shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-lg"
                 title="Account"
                 aria-label="Account"
@@ -867,10 +774,10 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
             )}
 
             {accountMenuOpen && user && (
-            <div
-  className="absolute right-0 top-14 z-[9999] w-60 overflow-hidden rounded-2xl border border-violet-100 bg-white p-2 shadow-2xl"
-  onMouseDown={(event) => event.stopPropagation()}
->
+              <div
+                className="absolute right-0 top-14 z-[9999] w-60 overflow-hidden rounded-2xl border border-violet-100 bg-white p-2 shadow-2xl"
+                onMouseDown={(event) => event.stopPropagation()}
+              >
                 <div className="border-b border-slate-100 px-3 py-3">
                   <p className="truncate text-sm font-bold text-slate-900">
                     {user.name}
@@ -892,6 +799,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleLogout}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
                 >
@@ -920,15 +828,11 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
           LifeOS
         </button>
 
-        <div
-          ref={searchRef}
-          className="relative ml-auto min-w-0 flex-1"
-        >
+        <div ref={searchRef} className="relative ml-auto min-w-0 flex-1">
           <div className="relative">
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-violet-400">
               <Icon name="search" size={17} />
             </span>
-
             <input
               type="text"
               value={search}
@@ -949,9 +853,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
         {user && (
           <button
-            onClick={() =>
-              setAccountMenuOpen((current) => !current)
-            }
+            onClick={() => setAccountMenuOpen((current) => !current)}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-extrabold text-white"
             aria-label="Account"
           >
@@ -968,9 +870,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
               <p className="truncate text-sm font-bold text-slate-900">
                 {user.name}
               </p>
-              <p className="truncate text-xs text-slate-500">
-                {user.email}
-              </p>
+              <p className="truncate text-xs text-slate-500">{user.email}</p>
             </div>
 
             <button
@@ -985,6 +885,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
             </button>
 
             <button
+              type="button"
               onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50"
             >
@@ -1012,7 +913,6 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                 >
                   LifeOS
                 </button>
-
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-lg text-slate-600"
@@ -1032,7 +932,6 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-extrabold text-white">
                       {getUserInitial()}
                     </div>
-
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-slate-800">
                         {user.name}
@@ -1061,3 +960,4 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 }
 
 export default Navbar;
+

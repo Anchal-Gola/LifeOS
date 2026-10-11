@@ -1,9 +1,11 @@
+
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { AuthContext } from "../context/AuthContext";
 
 function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, googleLogin } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -15,7 +17,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!email.trim() || !password) {
       setError("Please enter your email and password.");
       return;
     }
@@ -24,11 +26,33 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (err) {
       setError(
-        error.response?.data?.message || "Invalid email or password"
+        err.response?.data?.message || "Invalid email or password."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    if (!response?.credential) {
+      setError("Google sign-in did not return a credential.");
+      return;
+    }
+
+    setError("");
+    setLoading(true);
+
+    try {
+      await googleLogin(response.credential);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Google sign-in failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -39,7 +63,6 @@ function Login() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 px-6 py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center justify-center">
         <div className="grid w-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl lg:grid-cols-2">
-
           {/* Left Side */}
           <div className="hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-12 text-white lg:flex lg:flex-col lg:justify-between">
             <div>
@@ -47,10 +70,7 @@ function Login() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl backdrop-blur">
                   ✨
                 </div>
-
-                <span className="text-2xl font-bold">
-                  LifeOS
-                </span>
+                <span className="text-2xl font-bold">LifeOS</span>
               </div>
 
               <h2 className="max-w-md text-4xl font-bold leading-tight">
@@ -61,8 +81,7 @@ function Login() {
 
               <p className="mt-5 max-w-md text-base leading-7 text-purple-100">
                 Manage your tasks, goals, habits, study, notes,
-                calendar and productivity with one intelligent
-                workspace.
+                calendar and productivity with one intelligent workspace.
               </p>
             </div>
 
@@ -76,13 +95,10 @@ function Login() {
           {/* Right Side */}
           <div className="flex items-center justify-center p-8 sm:p-12">
             <div className="w-full max-w-md">
-
-              {/* Mobile Logo */}
               <div className="mb-8 flex items-center gap-3 lg:hidden">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-pink-500 text-lg text-white">
                   ✨
                 </div>
-
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-2xl font-bold text-transparent">
                   LifeOS
                 </span>
@@ -92,27 +108,22 @@ function Login() {
                 <p className="mb-2 text-sm font-semibold text-purple-600">
                   Welcome back
                 </p>
-
                 <h1 className="text-3xl font-bold text-slate-900">
                   Sign in to LifeOS
                 </h1>
-
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Continue managing your life from one intelligent
-                  workspace.
+                  Continue managing your life from one intelligent workspace.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-
-                {/* Email */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Email address
                   </label>
-
                   <input
                     type="email"
+                    autoComplete="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -120,15 +131,23 @@ function Login() {
                   />
                 </div>
 
-                {/* Password */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Password
-                  </label>
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <label className="block text-sm font-medium text-slate-700">
+                      Password
+                    </label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm font-semibold text-purple-600 hover:text-purple-800"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
 
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -137,20 +156,9 @@ function Login() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword((prev) => !prev)
-                      }
+                      onClick={() => setShowPassword((prev) => !prev)}
                       className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-purple-50 hover:text-purple-600"
-                      aria-label={
-                        showPassword
-                          ? "Hide password"
-                          : "Show password"
-                      }
-                      title={
-                        showPassword
-                          ? "Hide password"
-                          : "Show password"
-                      }
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
                         <svg
@@ -187,14 +195,15 @@ function Login() {
                   </div>
                 </div>
 
-                {/* Error */}
                 {error && (
-                  <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  <div
+                    role="alert"
+                    className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600"
+                  >
                     {error}
                   </div>
                 )}
 
-                {/* Login Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -204,19 +213,42 @@ function Login() {
                 </button>
               </form>
 
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-slate-200" />
+                <span className="text-xs text-slate-400">OR CONTINUE WITH</span>
+                <div className="h-px flex-1 bg-slate-200" />
+              </div>
+
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError("Google sign-in was cancelled or failed.")}
+                  text="continue_with"
+                  shape="rectangular"
+                  theme="outline"
+                  width="320"
+                />
+              </div>
+
+              <p className="mt-6 text-center text-sm text-slate-600">
+                Don't have an account?{" "}
+                <Link
+                  to="/signup"
+                  className="font-semibold text-purple-600 hover:text-purple-800"
+                >
+                  Create account
+                </Link>
+              </p>
+
               <div className="mt-8 flex items-center gap-3">
                 <div className="h-px flex-1 bg-slate-200" />
-
-                <span className="text-xs text-slate-400">
-                  LifeOS Intelligence
-                </span>
-
+                <span className="text-xs text-slate-400">LifeOS Intelligence</span>
                 <div className="h-px flex-1 bg-slate-200" />
               </div>
 
               <p className="mt-6 text-center text-xs leading-5 text-slate-400">
-                By continuing, you agree to use LifeOS responsibly
-                and keep your account credentials secure.
+                By continuing, you agree to use LifeOS responsibly and keep your
+                account credentials secure.
               </p>
             </div>
           </div>
@@ -227,3 +259,4 @@ function Login() {
 }
 
 export default Login;
+

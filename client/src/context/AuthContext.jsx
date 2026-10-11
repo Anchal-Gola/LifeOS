@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import {
   getCurrentUser,
   loginUser,
+  googleLoginUser,
   logoutUser,
 } from "../api/authApi";
 
@@ -16,13 +17,17 @@ export function AuthProvider({ children }) {
     setUser(data.data);
   };
 
+  const googleLogin = async (credential) => {
+    const data = await googleLoginUser(credential);
+    setUser(data.data);
+  };
+
   const logout = async () => {
     try {
       await logoutUser();
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      // Always clear the logged-in user from React state
       setUser(null);
     }
   };
@@ -44,12 +49,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-      }}
+      value={{ user, loading, login, googleLogin, logout }}
     >
       {children}
     </AuthContext.Provider>

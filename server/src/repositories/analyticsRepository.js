@@ -1,5 +1,5 @@
 import Task from "../models/Task.js";
-import Habit from "../models/Habit.js";
+import Habit from "../models/habit.js";
 import Goal from "../models/Goal.js";
 import Study from "../models/Study.js";
 
