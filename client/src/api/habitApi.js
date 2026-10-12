@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/habits";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/habits";
 
 export const createHabit = async (habitData) => {
   const response = await axios.post(

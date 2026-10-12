@@ -11,7 +11,7 @@ import {
   deleteDocument,
 } from "../api/documentApi";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://lifeos-backend-o6vn.onrender.com";
 
 function Documents() {
   const [documents, setDocuments] = useState([]);

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/presence";
+  "https://lifeos-backend-o6vn.onrender.com/api/presence";
 
 export const sendPresenceHeartbeat = async () => {
   const response = await axios.post(

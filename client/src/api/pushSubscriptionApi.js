@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/push-subscriptions";
+  "https://lifeos-backend-o6vn.onrender.com/api/push-subscriptions";
 
 export const getVapidPublicKey = async () => {
   const response = await axios.get(

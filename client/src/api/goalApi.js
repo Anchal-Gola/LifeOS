@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/goals";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/goals";
 
 export const createGoal = async (goalData) => {
   const response = await axios.post(

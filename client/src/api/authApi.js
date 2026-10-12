@@ -1,7 +1,7 @@
 
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/auth";
 
 export const loginUser = async (email, password) =>
   (

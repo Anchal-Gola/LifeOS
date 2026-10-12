@@ -28,7 +28,7 @@ function Dashboard() {
     const fetchIntelligence = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/intelligence",
+          "https://lifeos-backend-o6vn.onrender.com/api/intelligence",
           {
             withCredentials: true,
           }

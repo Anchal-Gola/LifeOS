@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/notes";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/notes";
 
 export const createNote = async (noteData) => {
   const response = await axios.post(

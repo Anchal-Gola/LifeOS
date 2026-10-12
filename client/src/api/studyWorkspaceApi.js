@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/study-workspace";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/study-workspace";
 
 export const createSubject = (subject) =>
   axios.post(

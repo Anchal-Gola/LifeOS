@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/events";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/events";
 
 export const createEvent = async (eventData) => {
   const response = await axios.post(

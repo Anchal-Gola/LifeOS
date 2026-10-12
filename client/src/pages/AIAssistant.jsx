@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import MainLayout from "../layouts/MainLayout";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com";
 const CURRENT_CHAT_KEY = "lifeos_current_conversation";
 
 const initialMessage = {

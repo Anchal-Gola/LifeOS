@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/schedules";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/schedules";
 
 export const createSchedule = async (scheduleData) => {
   const response = await axios.post(

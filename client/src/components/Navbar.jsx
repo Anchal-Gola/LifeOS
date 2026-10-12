@@ -185,7 +185,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
         setShowResults(true);
 
         const response = await axios.get(
-          `http://localhost:5000/api/search?q=${encodeURIComponent(query)}`,
+          `https://lifeos-backend-o6vn.onrender.com/api/search?q=${encodeURIComponent(query)}`,
           { withCredentials: true }
         );
 

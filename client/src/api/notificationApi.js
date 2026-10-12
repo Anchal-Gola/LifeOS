@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/notifications";
+const API_URL = "https://lifeos-backend-o6vn.onrender.com/api/notifications";
 
 export const createNotification = async (notificationData) => {
   const response = await axios.post(
