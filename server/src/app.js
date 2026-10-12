@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-
+import { FRONTEND_URL } from "./config/env.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
@@ -29,10 +29,20 @@ import userPresenceRoutes from "./routes/userPresenceRoutes.js";
 
 const app = express();
 
-// Middlewares
+const allowedOrigins = [
+  FRONTEND_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
 app.use(
   cors({
-   origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -40,13 +50,11 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// uploaded files
 app.use(
   "/uploads",
   express.static(path.join(process.cwd(), "uploads"))
 );
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
@@ -70,8 +78,6 @@ app.use("/api/schedules", scheduleRoutes);
 app.use("/api/push-subscriptions", pushSubscriptionRoutes);
 app.use("/api/presence", userPresenceRoutes);
 
-
-// Test Route
 app.get("/", (req, res) => {
   res.json({
     success: true,
