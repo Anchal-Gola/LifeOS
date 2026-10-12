@@ -1,4 +1,4 @@
-import StudyWorkspace from "../models/StudyWorkspace.js";
+import StudyWorkspace from "../models/studyWorkspace.js";
 
 export const createSubjectService = async (userId, subject) => {
   return await StudyWorkspace.create({
