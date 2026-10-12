@@ -7,7 +7,7 @@ import Note from "../models/Note.js";
 import Notification from "../models/Notification.js";
 import Document from "../models/Document.js";
 import Study from "../models/Study.js";
-import StudyWorkspace from "../models/StudyWorkspace.js";
+import StudyWorkspace from "../models/studyWorkspace.js";
 import Profile from "../models/Profile.js";
 import Settings from "../models/Settings.js";
 import User from "../models/User.js";
