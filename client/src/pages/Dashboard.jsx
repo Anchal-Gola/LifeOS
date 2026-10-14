@@ -1,9 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
+
+import { useContext, useEffect, useMemo, useState } from "react";
 import MainLayout from "../layouts/MainLayout";
 import { getDashboard } from "../services/dashboardService";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function Dashboard() {
+  const { user } = useContext(AuthContext);
+
+  const userName =
+    user?.name ||
+    user?.fullName ||
+    user?.displayName ||
+    user?.email?.split("@")[0] ||
+    "there";
+
   const [dashboard, setDashboard] = useState(null);
   const [intelligence, setIntelligence] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
@@ -135,7 +146,6 @@ function Dashboard() {
     <MainLayout>
       <div className="min-h-full bg-[#f8f8fc] px-4 py-6 transition-colors dark:bg-slate-950 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-
           {/* TOP HEADER */}
           <section className="relative mb-7 overflow-hidden rounded-[2rem] border border-purple-100 bg-white px-6 py-7 shadow-[0_12px_45px_rgba(124,58,237,0.07)] dark:border-slate-800 dark:bg-slate-900 sm:px-8 lg:px-10">
             <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-purple-100/70 blur-3xl dark:bg-purple-900/10" />
@@ -157,7 +167,7 @@ function Dashboard() {
                 <h1 className="text-3xl font-extrabold tracking-tight text-[#172033] dark:text-white sm:text-4xl lg:text-[2.7rem]">
                   {greeting},{" "}
                   <span className="text-purple-600 dark:text-purple-400">
-                    Anchal
+                    {userName}
                   </span>{" "}
                   👋
                 </h1>
@@ -260,7 +270,6 @@ function Dashboard() {
 
           {/* MAIN CONTENT */}
           <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-
             {/* TODAY'S FOCUS */}
             <section className="overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-white shadow-[0_8px_35px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900">
               <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5 dark:border-slate-800 sm:px-7">
