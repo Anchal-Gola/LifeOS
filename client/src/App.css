@@ -341,3 +341,61 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+/* Mobile viewport safeguards */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+}
+
+body,
+#root {
+  overflow-x: clip;
+}
+
+main {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Improve spacing on mobile */
+@media (max-width: 600px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .dashboard-section {
+    padding: 18px;
+  }
+
+  .stat-card {
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .task-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .task-item > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+}

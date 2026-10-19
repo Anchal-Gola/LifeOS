@@ -812,7 +812,7 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
         </div>
       </header>
 
-      <div className="fixed inset-x-0 top-0 z-40 flex h-20 items-center gap-3 border-b border-violet-100 bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:hidden">
+      <div className="fixed inset-x-0 top-0 z-40 flex h-20 items-center gap-3 border-b border-violet-100 bg-white/95 px-4 shadow-sm backdrop-blur-xl lg:hidden max-[380px]:gap-2 max-[380px]:px-3">
         <button
           onClick={() => setMobileMenuOpen(true)}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-violet-100 bg-white text-slate-600 shadow-sm"
@@ -823,8 +823,8 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
 
         <button
           onClick={() => navigate("/")}
-          className="bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-xl font-extrabold text-transparent"
-        >
+          className="shrink-0 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-xl font-extrabold text-transparent max-[380px]:text-lg"
+          >
           LifeOS
         </button>
 
@@ -838,8 +838,8 @@ function Navbar({ sidebarCollapsed = false, onToggleSidebar }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search..."
-              className="w-full rounded-2xl border border-violet-100 bg-violet-50/60 py-2.5 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
-            />
+             className="w-full min-w-0 rounded-2xl border border-violet-100 bg-violet-50/60 py-2.5 pl-10 pr-3 text-sm text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100 max-[380px]:pl-8 max-[380px]:pr-2 max-[380px]:text-xs"
+             />
           </div>
         </div>
 

@@ -144,10 +144,10 @@ function Dashboard() {
 
   return (
     <MainLayout>
-      <div className="min-h-full bg-[#f8f8fc] px-4 py-6 transition-colors dark:bg-slate-950 sm:px-6 lg:px-8">
+      <div className="min-h-full w-full min-w-0 bg-[#f8f8fc] px-3 py-4 transition-colors dark:bg-slate-950 sm:px-6 sm:py-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           {/* TOP HEADER */}
-          <section className="relative mb-7 overflow-hidden rounded-[2rem] border border-purple-100 bg-white px-6 py-7 shadow-[0_12px_45px_rgba(124,58,237,0.07)] dark:border-slate-800 dark:bg-slate-900 sm:px-8 lg:px-10">
+          <section className="relative mb-6 min-w-0 overflow-hidden rounded-2xl border border-purple-100 bg-white px-4 py-5 shadow-[0_12px_45px_rgba(124,58,237,0.07)] dark:border-slate-800 dark:bg-slate-900 sm:mb-7 sm:rounded-[2rem] sm:px-8 sm:py-7 lg:px-10">
             <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-purple-100/70 blur-3xl dark:bg-purple-900/10" />
             <div className="pointer-events-none absolute -bottom-28 right-1/3 h-60 w-60 rounded-full bg-blue-100/50 blur-3xl dark:bg-blue-900/10" />
 

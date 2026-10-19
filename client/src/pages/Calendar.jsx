@@ -296,7 +296,7 @@ function Calendar() {
 
   return (
     <MainLayout>
-      <div className="min-h-full bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 px-5 py-8 text-slate-900 transition-colors duration-300 dark:from-[#0a1020] dark:via-[#0d1426] dark:to-indigo-950/20 dark:text-white sm:px-8">
+      <div className="min-h-full w-full min-w-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 px-3 py-5 text-slate-900 transition-colors duration-300 dark:from-[#0a1020] dark:via-[#0d1426] dark:to-indigo-950/20 dark:text-white sm:px-8 sm:py-8">
         <div className="mx-auto max-w-7xl">
 
           {/* Header */}
@@ -330,7 +330,7 @@ function Calendar() {
           </div>
 
           {/* Stats */}
-          <div className="mb-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
+          <div className="mb-6 grid grid-cols-2 gap-3 sm:mb-8 sm:gap-4 xl:grid-cols-4">
 
             <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-[#111827]">
               <div className="mb-4 flex items-center justify-between">
@@ -448,7 +448,7 @@ function Calendar() {
                     ? handleUpdateEvent
                     : handleCreateEvent
                 }
-                className="space-y-4 p-6"
+                className="space-y-4 p-4 sm:p-6"
               >
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">

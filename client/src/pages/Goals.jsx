@@ -172,7 +172,7 @@ function Goals() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#f7f7ff] px-5 py-8 text-[#172033] transition-colors duration-300 dark:bg-[#0b1120] dark:text-white sm:px-8 lg:px-10">
+      <div className="min-h-screen w-full min-w-0 bg-[#f7f7ff] px-3 py-5 text-[#172033] transition-colors duration-300 dark:bg-[#0b1120] dark:text-white sm:px-8 sm:py-8 lg:px-10">
         <div className="mx-auto max-w-7xl">
           {/* Header */}
           <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -224,7 +224,7 @@ function Goals() {
 
           {/* Create Goal */}
           <div className="mb-8 overflow-hidden rounded-3xl border border-violet-100 bg-white shadow-sm dark:border-violet-400/15 dark:bg-[#111827]">
-            <div className="border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-pink-50 px-6 py-6 dark:border-violet-400/10 dark:from-violet-950/30 dark:via-[#111827] dark:to-fuchsia-950/20">
+            <div className="border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-pink-50 px-4 py-5 dark:border-violet-400/10 dark:from-violet-950/30 dark:via-[#111827] dark:to-fuchsia-950/20 sm:px-6 sm:py-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xl text-white shadow-lg shadow-violet-500/20">
                   🎯
@@ -240,7 +240,7 @@ function Goals() {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <form
                 onSubmit={handleCreateGoal}
                 className="grid gap-4 lg:grid-cols-2"

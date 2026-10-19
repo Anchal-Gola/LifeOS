@@ -191,7 +191,7 @@ function Habits() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 px-5 py-8 text-[#172033] transition-colors duration-300 dark:from-[#0a1020] dark:via-[#0d1426] dark:to-indigo-950/20 dark:text-white sm:px-8 lg:px-10">
+      <div className="min-h-screen w-full min-w-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 px-3 py-5 text-[#172033] transition-colors duration-300 dark:from-[#0a1020] dark:via-[#0d1426] dark:to-indigo-950/20 dark:text-white sm:px-8 sm:py-8 lg:px-10">
         <div className="mx-auto max-w-7xl">
 
           {/* Header */}
@@ -238,7 +238,7 @@ function Habits() {
           {/* Create Habit */}
           <div className="mb-8 overflow-hidden rounded-3xl border border-indigo-100 bg-white shadow-sm dark:border-slate-800 dark:bg-[#111827]">
 
-            <div className="border-b border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-violet-50 px-6 py-6 dark:border-slate-800 dark:from-indigo-950/30 dark:via-[#111827] dark:to-violet-950/30">
+            <div className="border-b border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-violet-50 px-4 py-5 dark:border-slate-800 dark:from-indigo-950/30 dark:via-[#111827] dark:to-violet-950/30 sm:px-6 sm:py-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-xl text-white shadow-lg shadow-indigo-500/20">
                   +
@@ -256,7 +256,7 @@ function Habits() {
               </div>
             </div>
 
-            <div className="p-6">
+           <div className="p-4 sm:p-6">
               <form
                 onSubmit={handleCreateHabit}
                 className="grid gap-4 lg:grid-cols-4"
@@ -356,7 +356,7 @@ function Habits() {
                   return (
                     <article
                       key={habit._id}
-                      className="rounded-3xl border border-indigo-200 bg-white p-6 shadow-sm dark:border-indigo-400/20 dark:bg-[#111827]"
+                      className="min-w-0 rounded-3xl border border-indigo-200 bg-white p-4 shadow-sm dark:border-indigo-400/20 dark:bg-[#111827] sm:p-6"
                     >
                       <div className="mb-6 flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-lg text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
@@ -436,7 +436,7 @@ function Habits() {
                 return (
                   <article
                     key={habit._id}
-                    className={`group relative overflow-hidden rounded-3xl border bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#111827] ${
+                    className={`group relative overflow-hidden rounded-3xl border bg-white p-4 sm:p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#111827] ${
                       completedToday
                         ? "border-indigo-100 dark:border-indigo-400/20"
                         : "border-slate-100 dark:border-slate-800"

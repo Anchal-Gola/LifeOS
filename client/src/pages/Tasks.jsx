@@ -249,7 +249,7 @@ function Tasks() {
 
   return (
     <MainLayout>
-      <div className="relative min-h-full overflow-hidden bg-[#f8f7ff] px-5 py-8 text-slate-900 transition-colors dark:bg-[#100d18] dark:text-white sm:px-8 lg:px-10">
+     <div className="relative min-h-full w-full min-w-0 overflow-hidden bg-[#f8f7ff] px-3 py-5 text-slate-900 transition-colors dark:bg-[#100d18] dark:text-white sm:px-8 sm:py-8 lg:px-10">
         <div className="pointer-events-none absolute -left-32 top-0 h-80 w-80 rounded-full bg-purple-300/20 blur-3xl dark:bg-purple-600/10" />
         <div className="pointer-events-none absolute right-0 top-20 h-96 w-96 rounded-full bg-pink-300/15 blur-3xl dark:bg-pink-600/10" />
 
@@ -259,8 +259,8 @@ function Tasks() {
           <div className="mb-8 overflow-hidden rounded-[30px] border border-purple-100 bg-white/90 shadow-[0_20px_60px_rgba(124,58,237,0.08)] backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#17121f]/90">
             <div className="h-1 bg-gradient-to-r from-violet-600 via-purple-500 to-pink-500" />
 
-            <div className="flex flex-col gap-6 px-6 py-7 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
-              <div>
+           <div className="flex min-w-0 flex-col gap-5 px-4 py-5 sm:gap-6 sm:px-8 sm:py-7 lg:flex-row lg:items-center lg:justify-between">
+            <div>
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-purple-600 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-300">
                   <span className="h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
                   Productivity
@@ -401,7 +401,7 @@ function Tasks() {
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <form
                   onSubmit={
                     editingTask ? handleUpdateTask : handleCreateTask

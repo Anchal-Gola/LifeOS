@@ -45,9 +45,9 @@ function MainLayout({ children }) {
         onToggleSidebar={toggleSidebar}
       />
 
-      <main className="min-h-screen pt-20 transition-[padding-left] duration-300 ease-in-out lg:pl-[var(--lifeos-sidebar-width)]">
-        {children}
-      </main>
+     <main className="min-h-screen w-full min-w-0 pt-20 transition-[padding-left] duration-300 ease-in-out lg:pl-[var(--lifeos-sidebar-width)]">
+  {children}
+</main>
     </div>
   );
 }

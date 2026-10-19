@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import MainLayout from "../layouts/MainLayout";
-
 import {
   createDocument,
   uploadDocument,
@@ -231,15 +229,15 @@ function Documents() {
 
   return (
     <MainLayout>
-      <div className="min-h-full bg-[#f8f7ff] px-5 py-8 dark:bg-[#100d18] sm:px-8 lg:px-10">
+      <div className="min-h-full w-full min-w-0 bg-[#f8f7ff] px-3 py-5 text-slate-900 transition-colors dark:bg-[#100d18] dark:text-white sm:px-8 sm:py-8 lg:px-10">
         <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-violet-400/10 blur-3xl dark:bg-violet-600/10" />
           <div className="absolute right-0 top-10 h-80 w-80 rounded-full bg-pink-400/10 blur-3xl dark:bg-pink-600/10" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl">
+        <div className="relative mx-auto w-full min-w-0 max-w-7xl">
           {/* HEADER */}
-          <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mb-6 flex min-w-0 flex-col gap-4 sm:mb-8 sm:gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-violet-600 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f] dark:text-violet-300">
                 <span className="h-2 w-2 rounded-full bg-gradient-to-r from-violet-500 to-pink-500" />
@@ -257,7 +255,7 @@ function Documents() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <div className="rounded-2xl border border-violet-100 bg-white px-5 py-3 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
+              <div className="rounded-2xl border border-violet-100 bg-white px-4 py-3 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f] sm:px-5">
                 <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   Documents
                 </p>
@@ -267,7 +265,7 @@ function Documents() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-pink-100 bg-white px-5 py-3 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f]">
+              <div className="rounded-2xl border border-pink-100 bg-white px-4 py-3 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f] sm:px-5">
                 <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">
                   This Month
                 </p>
@@ -280,22 +278,23 @@ function Documents() {
           </div>
 
           {/* STATS */}
-          <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-5 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
+          <div className="mb-6 grid min-w-0 grid-cols-2 gap-3 sm:mb-8 sm:gap-4 xl:grid-cols-4">
+            {/* TOTAL DOCUMENTS */}
+            <div className="relative min-w-0 overflow-hidden rounded-2xl border border-violet-100 bg-white p-3 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f] sm:p-5">
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-violet-400/10 blur-2xl" />
 
               <div className="relative">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex min-w-0 items-center justify-between gap-2">
+                  <p className="min-w-0 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">
                     Total Documents
                   </p>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-lg dark:bg-violet-500/10">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-lg dark:bg-violet-500/10 sm:h-10 sm:w-10">
                     📚
                   </div>
                 </div>
 
-                <p className="mt-4 text-3xl font-black text-[#172033] dark:text-white">
+                <p className="mt-3 text-2xl font-black text-[#172033] dark:text-white sm:mt-4 sm:text-3xl">
                   {totalDocuments}
                 </p>
 
@@ -305,21 +304,22 @@ function Documents() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl border border-pink-100 bg-white p-5 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f]">
+            {/* UPLOADED FILES */}
+            <div className="relative min-w-0 overflow-hidden rounded-2xl border border-pink-100 bg-white p-3 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f] sm:p-5">
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-pink-400/10 blur-2xl" />
 
               <div className="relative">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex min-w-0 items-center justify-between gap-2">
+                  <p className="min-w-0 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">
                     Uploaded Files
                   </p>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-lg dark:bg-pink-500/10">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-lg dark:bg-pink-500/10 sm:h-10 sm:w-10">
                     📎
                   </div>
                 </div>
 
-                <p className="mt-4 text-3xl font-black text-pink-600 dark:text-pink-300">
+                <p className="mt-3 text-2xl font-black text-pink-600 dark:text-pink-300 sm:mt-4 sm:text-3xl">
                   {uploadedDocuments}
                 </p>
 
@@ -329,21 +329,22 @@ function Documents() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-5 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
+            {/* ONLINE RESOURCES */}
+            <div className="relative min-w-0 overflow-hidden rounded-2xl border border-violet-100 bg-white p-3 shadow-sm dark:border-violet-500/20 dark:bg-[#17121f] sm:p-5">
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-violet-400/10 blur-2xl" />
 
               <div className="relative">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex min-w-0 items-center justify-between gap-2">
+                  <p className="min-w-0 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">
                     Online Resources
                   </p>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-lg dark:bg-violet-500/10">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-lg dark:bg-violet-500/10 sm:h-10 sm:w-10">
                     🔗
                   </div>
                 </div>
 
-                <p className="mt-4 text-3xl font-black text-violet-600 dark:text-violet-300">
+                <p className="mt-3 text-2xl font-black text-violet-600 dark:text-violet-300 sm:mt-4 sm:text-3xl">
                   {urlDocuments}
                 </p>
 
@@ -353,21 +354,22 @@ function Documents() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl border border-pink-100 bg-white p-5 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f]">
+            {/* CATEGORIES */}
+            <div className="relative min-w-0 overflow-hidden rounded-2xl border border-pink-100 bg-white p-3 shadow-sm dark:border-pink-500/20 dark:bg-[#17121f] sm:p-5">
               <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-pink-400/10 blur-2xl" />
 
               <div className="relative">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex min-w-0 items-center justify-between gap-2">
+                  <p className="min-w-0 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-400 sm:text-sm">
                     Categories
                   </p>
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-lg dark:bg-pink-500/10">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-lg dark:bg-pink-500/10 sm:h-10 sm:w-10">
                     ◈
                   </div>
                 </div>
 
-                <p className="mt-4 text-3xl font-black text-pink-600 dark:text-pink-300">
+                <p className="mt-3 text-2xl font-black text-pink-600 dark:text-pink-300 sm:mt-4 sm:text-3xl">
                   {categoryCount}
                 </p>
 
@@ -379,13 +381,14 @@ function Documents() {
           </div>
 
           {/* MAIN WORKSPACE */}
-          <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
-            {/* CREATE / EDIT */}
-            <div className="h-fit overflow-hidden rounded-3xl border border-violet-100 bg-white shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
-              <div className="border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-pink-50 px-6 py-6 dark:border-violet-500/10 dark:from-violet-500/10 dark:via-[#17121f] dark:to-pink-500/10">
+          <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+            {/* CREATE / EDIT DOCUMENT */}
+            <div className="h-fit min-w-0 overflow-hidden rounded-3xl border border-violet-100 bg-white shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
+              {/* FORM HEADER */}
+              <div className="border-b border-violet-100 bg-gradient-to-r from-violet-50 via-white to-pink-50 px-4 py-5 dark:border-violet-500/10 dark:from-violet-500/10 dark:via-[#17121f] dark:to-pink-500/10 sm:px-6 sm:py-6">
                 <div className="flex items-center gap-4">
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl text-xl text-white shadow-lg ${
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl text-white shadow-lg ${
                       editingDocument
                         ? "bg-gradient-to-br from-pink-500 to-fuchsia-500 shadow-pink-500/20"
                         : "bg-gradient-to-br from-violet-600 to-pink-500 shadow-violet-500/20"
@@ -394,7 +397,7 @@ function Documents() {
                     {editingDocument ? "✎" : "+"}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
                       {editingDocument ? "Update" : "New Document"}
                     </p>
@@ -408,10 +411,11 @@ function Documents() {
                 </div>
               </div>
 
-              <div className="p-6">
+              {/* FORM BODY */}
+              <div className="min-w-0 p-4 sm:p-6">
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* NAME */}
-                  <div>
+                  {/* DOCUMENT NAME */}
+                  <div className="min-w-0">
                     <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                       Document name
                     </label>
@@ -421,12 +425,12 @@ function Documents() {
                       placeholder="e.g. DBMS Notes"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
+                      className="w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
                     />
                   </div>
 
-                  {/* SOURCE */}
-                  <div>
+                  {/* SOURCE TYPE */}
+                  <div className="min-w-0">
                     <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                       Add from
                     </label>
@@ -435,7 +439,7 @@ function Documents() {
                       <button
                         type="button"
                         onClick={() => setSourceType("url")}
-                        className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
+                        className={`min-w-0 rounded-xl px-2 py-3 text-sm font-bold transition sm:px-4 ${
                           sourceType === "url"
                             ? "bg-white text-violet-600 shadow-sm dark:bg-[#241a30] dark:text-violet-300"
                             : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white"
@@ -447,7 +451,7 @@ function Documents() {
                       <button
                         type="button"
                         onClick={() => setSourceType("upload")}
-                        className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
+                        className={`min-w-0 rounded-xl px-2 py-3 text-sm font-bold transition sm:px-4 ${
                           sourceType === "upload"
                             ? "bg-white text-violet-600 shadow-sm dark:bg-[#241a30] dark:text-violet-300"
                             : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white"
@@ -460,7 +464,7 @@ function Documents() {
 
                   {/* URL */}
                   {sourceType === "url" && (
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                         Document URL
                       </label>
@@ -470,24 +474,24 @@ function Documents() {
                         placeholder="https://example.com/file.pdf"
                         value={fileUrl}
                         onChange={(e) => setFileUrl(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
+                        className="w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
                       />
                     </div>
                   )}
 
                   {/* UPLOAD */}
                   {sourceType === "upload" && (
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                         Choose file
                       </label>
 
-                      <label className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 px-5 py-8 text-center transition hover:border-violet-300 hover:bg-violet-50/40 dark:border-white/10 dark:bg-white/5 dark:hover:border-violet-400/50 dark:hover:bg-violet-500/10">
+                      <label className="group flex min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 px-3 py-8 text-center transition hover:border-violet-300 hover:bg-violet-50/40 dark:border-white/10 dark:bg-white/5 dark:hover:border-violet-400/50 dark:hover:bg-violet-500/10 sm:px-5">
                         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm transition group-hover:scale-105 dark:bg-white/10">
                           📎
                         </div>
 
-                        <span className="max-w-full truncate text-sm font-bold text-slate-700 dark:text-slate-200">
+                        <span className="max-w-full break-all text-sm font-bold text-slate-700 dark:text-slate-200">
                           {selectedFile
                             ? selectedFile.name
                             : "Choose a file"}
@@ -512,7 +516,7 @@ function Documents() {
                       {editingDocument &&
                         !selectedFile &&
                         editingDocument.fileName && (
-                          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                          <p className="mt-2 break-words text-xs text-slate-500 dark:text-slate-400">
                             Current file:{" "}
                             <span className="font-medium">
                               {editingDocument.fileName}
@@ -522,9 +526,9 @@ function Documents() {
                     </div>
                   )}
 
-                  {/* TYPE + CATEGORY */}
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                    <div>
+                  {/* FILE TYPE + CATEGORY */}
+                  <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                         File type
                       </label>
@@ -537,11 +541,11 @@ function Documents() {
                         disabled={
                           sourceType === "upload" && !!selectedFile
                         }
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
+                        className="w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3.5 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
                       />
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-300">
                         Category
                       </label>
@@ -549,7 +553,7 @@ function Documents() {
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3.5 text-sm font-medium text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
+                        className="w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3.5 text-sm font-medium text-slate-700 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:focus:border-violet-400 dark:focus:bg-white/10 dark:focus:ring-violet-500/10"
                       >
                         <option value="general">General</option>
                         <option value="study">Study</option>
@@ -589,8 +593,8 @@ function Documents() {
 
             {/* DOCUMENT LIBRARY */}
             <div className="min-w-0">
-              <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
+              <div className="mb-6 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-500 dark:text-violet-300">
                     Document Workspace
                   </p>
@@ -607,7 +611,7 @@ function Documents() {
               </div>
 
               {documents.length === 0 ? (
-                <div className="rounded-3xl border border-dashed border-violet-200 bg-white px-6 py-20 text-center shadow-sm dark:border-violet-500/20 dark:bg-[#17121f]">
+                <div className="rounded-3xl border border-dashed border-violet-200 bg-white px-4 py-16 text-center shadow-sm dark:border-violet-500/20 dark:bg-[#17121f] sm:px-6 sm:py-20">
                   <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 text-2xl dark:from-violet-500/10 dark:to-pink-500/10">
                     📚
                   </div>
@@ -622,27 +626,27 @@ function Documents() {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid min-w-0 gap-4 lg:grid-cols-2">
                   {documents.map((document) => {
                     const documentUrl = getDocumentUrl(document);
 
                     return (
                       <article
                         key={document._id}
-                        className="group relative overflow-hidden rounded-3xl border border-violet-100 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-violet-500/15 dark:bg-[#17121f]"
+                        className="group relative min-w-0 overflow-hidden rounded-3xl border border-violet-100 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-violet-500/15 dark:bg-[#17121f] sm:p-5"
                       >
                         <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-violet-500 via-purple-500 to-pink-500" />
 
-                        <div className="flex gap-4">
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 text-2xl dark:from-violet-500/10 dark:to-pink-500/10">
+                        <div className="flex min-w-0 gap-3 sm:gap-4">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-50 to-pink-50 text-xl dark:from-violet-500/10 dark:to-pink-500/10 sm:h-14 sm:w-14 sm:text-2xl">
                             {getDocumentIcon(document)}
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
                                 <h3
-                                  className="truncate text-base font-black text-[#172033] dark:text-white sm:text-lg"
+                                  className="break-words text-base font-black text-[#172033] dark:text-white sm:text-lg"
                                   title={document.name}
                                 >
                                   {document.name}
@@ -650,7 +654,7 @@ function Documents() {
 
                                 {document.fileName && (
                                   <p
-                                    className="mt-1 truncate text-xs text-slate-400"
+                                    className="mt-1 break-all text-xs text-slate-400"
                                     title={document.fileName}
                                   >
                                     {document.fileName}
@@ -658,8 +662,9 @@ function Documents() {
                                 )}
                               </div>
 
-                              <div className="flex shrink-0 items-center gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
                                 <button
+                                  type="button"
                                   onClick={() => handleEdit(document)}
                                   className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-violet-400/30 dark:hover:bg-violet-500/10 dark:hover:text-violet-300"
                                 >
@@ -667,12 +672,9 @@ function Documents() {
                                 </button>
 
                                 <button
-                                  onClick={() =>
-                                    handleDelete(document._id)
-                                  }
-                                  disabled={
-                                    deletingId === document._id
-                                  }
+                                  type="button"
+                                  onClick={() => handleDelete(document._id)}
+                                  disabled={deletingId === document._id}
                                   className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-pink-500 transition hover:border-pink-200 hover:bg-pink-50 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-400/30 dark:hover:bg-pink-500/10"
                                 >
                                   {deletingId === document._id
@@ -702,7 +704,7 @@ function Documents() {
                               )}
                             </div>
 
-                            <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-white/10">
+                            <div className="mt-5 flex min-w-0 flex-col gap-3 border-t border-slate-100 pt-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
                               <p className="text-xs font-semibold text-slate-400">
                                 {document.createdAt
                                   ? `Added ${new Date(
@@ -716,7 +718,7 @@ function Documents() {
                                   href={documentUrl}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-xs font-extrabold text-violet-600 transition hover:text-pink-600 dark:text-violet-300 dark:hover:text-pink-300"
+                                  className="max-w-full break-words text-xs font-extrabold text-violet-600 transition hover:text-pink-600 dark:text-violet-300 dark:hover:text-pink-300"
                                 >
                                   Open document →
                                 </a>
